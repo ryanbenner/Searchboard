@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    {
+      "id": 1234567,
+      "url": "https://remotive.com/remote-jobs/software-dev/junior-vue-1234567",
+      "title": "Junior Vue.js Developer",
+      "company_name": "Beta Co",
+      "category": "Software Development",
+      "candidate_required_location": "Worldwide",
+      "salary": "$60,000 - $90,000",
+      "publication_date": "2026-05-05T15:30:00",
+      "description": "We need a junior Vue dev."
+    }
+  ]
+}
