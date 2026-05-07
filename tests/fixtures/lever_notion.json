@@ -1,0 +1,15 @@
+[
+  {
+    "id": "abc-123",
+    "text": "Senior Frontend Engineer",
+    "hostedUrl": "https://jobs.lever.co/notion/abc-123",
+    "applyUrl":  "https://jobs.lever.co/notion/abc-123/apply",
+    "createdAt": 1746374400000,
+    "categories": {
+      "team": "Engineering",
+      "location": "Remote — US",
+      "commitment": "Full-time"
+    },
+    "descriptionPlain": "We are hiring a Frontend Engineer with Vue or React experience. $150,000 - $200,000."
+  }
+]
