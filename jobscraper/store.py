@@ -1,0 +1,78 @@
+from __future__ import annotations
+from datetime import date
+from pathlib import Path
+import sqlite3
+from jobscraper.job import Job
+
+
+_SCHEMA = """
+CREATE TABLE IF NOT EXISTS seen (
+    id              TEXT PRIMARY KEY,
+    company         TEXT,
+    title           TEXT,
+    url             TEXT,
+    first_seen      DATE NOT NULL,
+    last_seen       DATE NOT NULL,
+    ranked_score    INTEGER,
+    applied         INTEGER NOT NULL DEFAULT 0,
+    notes           TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_seen_first_seen ON seen(first_seen);
+CREATE INDEX IF NOT EXISTS idx_seen_last_seen  ON seen(last_seen);
+"""
+
+
+class Store:
+    def __init__(self, path: str | Path):
+        self.path = Path(path)
+        self._conn = sqlite3.connect(self.path)
+        self._conn.row_factory = sqlite3.Row
+        self._conn.executescript(_SCHEMA)
+        self._conn.commit()
+
+    def upsert(self, jobs: list[Job], today: date | None = None) -> None:
+        today = today or date.today()
+        with self._conn:
+            for j in jobs:
+                self._conn.execute("""
+                    INSERT INTO seen(id, company, title, url, first_seen, last_seen, ranked_score)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(id) DO UPDATE SET
+                        last_seen     = excluded.last_seen,
+                        ranked_score  = excluded.ranked_score,
+                        title         = excluded.title,
+                        url           = excluded.url
+                """, (j.id, j.company, j.title, j.url, today.isoformat(), today.isoformat(), j.score))
+
+    def partition(self, today: date) -> tuple[list[Job], list[Job]]:
+        """Return (new_today, still_open). 'Still open' = first_seen < today AND last_seen == today."""
+        new_rows = self._conn.execute(
+            "SELECT * FROM seen WHERE first_seen = ?", (today.isoformat(),)
+        ).fetchall()
+        still_rows = self._conn.execute(
+            "SELECT * FROM seen WHERE first_seen < ? AND last_seen = ?",
+            (today.isoformat(), today.isoformat())
+        ).fetchall()
+        return [self._row_to_job(r) for r in new_rows], [self._row_to_job(r) for r in still_rows]
+
+    def all_seen(self) -> list[sqlite3.Row]:
+        return list(self._conn.execute("SELECT * FROM seen").fetchall())
+
+    def mark_applied(self, job_id: str, notes: str = "") -> None:
+        with self._conn:
+            self._conn.execute(
+                "UPDATE seen SET applied = 1, notes = ? WHERE id = ?", (notes, job_id)
+            )
+
+    @staticmethod
+    def _row_to_job(r: sqlite3.Row) -> Job:
+        return Job(
+            id=r["id"], source=r["id"].split(":")[0],
+            company=r["company"] or "", title=r["title"] or "",
+            location="", remote=False,
+            salary_min=None, salary_max=None,
+            url=r["url"] or "",
+            posted_at=None, seen_at=date.fromisoformat(r["last_seen"]),
+            description_text="",
+            score=r["ranked_score"], rationale=None,
+        )
