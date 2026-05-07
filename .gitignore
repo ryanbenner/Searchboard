@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+.uv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.DS_Store
+.env
+
+# Documentation/specs/plans live on disk but are never tracked.
+docs/
+
+# Generated daily snapshots — DO commit them; they're the historical record.
+# But local runs may produce in-flight files we don't want:
+data/*.tmp
