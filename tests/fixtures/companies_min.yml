@@ -1,0 +1,6 @@
+greenhouse:
+  - {slug: anthropic, discovered: "2026-05-06", source: seed}
+lever:
+  - {slug: notion,    discovered: "2026-05-06", source: seed}
+ashby: []
+disabled: []

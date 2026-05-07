@@ -1,0 +1,25 @@
+name: Test User
+email: test@example.com
+target_roles: [Full-stack Engineer]
+seniority:
+  years_experience: 0.5
+  bands: [new grad, junior]
+  exclude_bands_hard: [director, vp, manager]
+  exclude_bands_soft: [senior, staff]
+location:
+  remote_ok: true
+  onsite_metros: [San Diego]
+  exclude_metros: []
+compensation:
+  min_usd: 60000
+  target_usd: 90000
+skills:
+  strong: [Vue, Node.js]
+  some: [Python]
+  learning: []
+exclusions:
+  industries: []
+  companies: []
+  keywords: ["secret clearance"]
+highlights:
+  - "Built a chatbot"
