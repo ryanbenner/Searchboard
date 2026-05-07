@@ -1,0 +1,15 @@
+[
+  {"legal": "..."},
+  {
+    "id": "98765",
+    "company": "Acme",
+    "position": "Junior Full Stack Engineer",
+    "location": "Worldwide",
+    "tags": ["vue", "node", "remote"],
+    "description": "We are hiring a junior full-stack engineer. $80,000 - $120,000.",
+    "url": "https://remoteok.com/remote-jobs/98765",
+    "date": "2026-05-06T08:00:00+00:00",
+    "salary_min": 80000,
+    "salary_max": 120000
+  }
+]
