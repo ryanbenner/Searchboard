@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    {
+      "id": "job_01HX",
+      "title": "Software Engineer",
+      "department": "Engineering",
+      "team": "Web",
+      "isRemote": true,
+      "locationName": "Remote",
+      "publishedAt": "2026-05-05T10:00:00Z",
+      "jobUrl": "https://jobs.ashbyhq.com/linear/job_01HX",
+      "descriptionPlain": "Join us. Compensation: $160,000-$210,000."
+    }
+  ]
+}
