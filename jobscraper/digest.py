@@ -23,12 +23,13 @@ def _add_sheet(wb: Workbook, name: str, jobs: list[Job]) -> None:
     ws.append(_HEADERS)
     for j in sorted(jobs, key=lambda x: (x.score is None, -(x.score or 0))):
         ws.append(_row(j))
-    rule = ColorScaleRule(
-        start_type="num", start_value=0,  start_color="F8696B",
-        mid_type="num",   mid_value=60,   mid_color="FFEB84",
-        end_type="num",   end_value=100,  end_color="63BE7B",
-    )
-    ws.conditional_formatting.add(f"A2:A{ws.max_row}", rule)
+    if ws.max_row >= 2:
+        rule = ColorScaleRule(
+            start_type="num", start_value=0,  start_color="F8696B",
+            mid_type="num",   mid_value=60,   mid_color="FFEB84",
+            end_type="num",   end_value=100,  end_color="63BE7B",
+        )
+        ws.conditional_formatting.add(f"A2:A{ws.max_row}", rule)
     for i, _ in enumerate(_HEADERS, 1):
         ws.column_dimensions[get_column_letter(i)].width = 22
 

@@ -1,0 +1,95 @@
+from __future__ import annotations
+import argparse
+import os
+import sys
+from datetime import date
+from pathlib import Path
+from jobscraper.config import load_profile, load_companies, save_companies, Profile, Companies
+from jobscraper.discover import discover_new_slugs, merge_into_companies
+from jobscraper.digest import write_xlsx, render_markdown
+from jobscraper.email import send_digest
+from jobscraper.filter import hard_filter
+from jobscraper.rank import rank_jobs
+from jobscraper.sources.greenhouse import Greenhouse
+from jobscraper.sources.lever import Lever
+from jobscraper.sources.ashby import Ashby
+from jobscraper.sources.remoteok import RemoteOK
+from jobscraper.sources.remotive import Remotive
+from jobscraper.sources.weworkremotely import WeWorkRemotely
+from jobscraper.sources.hn_whoshiring import HNWhosHiring
+from jobscraper.store import Store
+
+
+DATA_DIR = Path("data")
+
+
+def build_sources(profile: Profile, companies: Companies):
+    return [
+        Greenhouse(slugs=[e.slug for e in companies.greenhouse]),
+        Lever(slugs=[e.slug for e in companies.lever]),
+        Ashby(slugs=[e.slug for e in companies.ashby]),
+        RemoteOK(),
+        Remotive(),
+        WeWorkRemotely(),
+        HNWhosHiring(),
+    ]
+
+
+def cmd_run(_args) -> int:
+    profile = load_profile("profile.yml")
+    companies = load_companies("companies.yml")
+
+    DATA_DIR.mkdir(exist_ok=True)
+    today = date.today()
+
+    raw: list = []
+    for src in build_sources(profile, companies):
+        try:
+            raw.extend(src.fetch())
+        except Exception as e:
+            print(f"[warn] {src.__class__.__name__} failed: {e}", file=sys.stderr)
+
+    new = discover_new_slugs(raw, companies)
+    if new:
+        merge_into_companies(companies, new, source_label="discovered")
+        save_companies(companies, "companies.yml")
+
+    filtered = hard_filter(raw, profile)
+    print(f"raw={len(raw)} filtered={len(filtered)}", file=sys.stderr)
+
+    ranked = rank_jobs(filtered, profile)
+
+    store = Store(DATA_DIR / "seen.sqlite")
+    store.upsert(ranked, today=today)
+    new_today, still_open = store.partition(today)
+    by_id = {j.id: j for j in ranked}
+    new_today = [by_id[j.id] for j in new_today if j.id in by_id]
+    still_open = [by_id[j.id] for j in still_open if j.id in by_id]
+
+    snap = DATA_DIR / f"{today.isoformat()}.xlsx"
+    write_xlsx(snap, new_today=new_today, still_open=still_open, all_ranked=ranked)
+    latest = DATA_DIR / "latest.xlsx"
+    latest.write_bytes(snap.read_bytes())
+
+    md = render_markdown(new_today, top_n=15)
+    send_digest(
+        host=os.environ["SMTP_HOST"],
+        port=int(os.environ["SMTP_PORT"]),
+        user=os.environ["SMTP_USER"],
+        password=os.environ["SMTP_PASS"],
+        to=os.environ["EMAIL_TO"],
+        subject=f"JobScraper {today.isoformat()} — {len(new_today)} new",
+        markdown_body=md,
+        xlsx_path=latest,
+    )
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    p = argparse.ArgumentParser(prog="jobscraper")
+    sub = p.add_subparsers(dest="cmd", required=True)
+    sub.add_parser("run", help="Run the daily pipeline.")
+    args = p.parse_args(argv)
+    if args.cmd == "run":
+        return cmd_run(args)
+    return 1
