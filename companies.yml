@@ -1,0 +1,113 @@
+greenhouse:
+- slug: anthropic
+  discovered: '2026-05-07'
+  source: seed
+- slug: stripe
+  discovered: '2026-05-07'
+  source: seed
+- slug: airbnb
+  discovered: '2026-05-07'
+  source: seed
+- slug: instacart
+  discovered: '2026-05-07'
+  source: seed
+- slug: discord
+  discovered: '2026-05-07'
+  source: seed
+- slug: figma
+  discovered: '2026-05-07'
+  source: seed
+- slug: vercel
+  discovered: '2026-05-07'
+  source: seed
+- slug: scaleai
+  discovered: '2026-05-07'
+  source: seed
+- slug: brex
+  discovered: '2026-05-07'
+  source: seed
+- slug: mercury
+  discovered: '2026-05-07'
+  source: seed
+- slug: gitlab
+  discovered: '2026-05-07'
+  source: seed
+- slug: cloudflare
+  discovered: '2026-05-07'
+  source: seed
+- slug: datadog
+  discovered: '2026-05-07'
+  source: seed
+- slug: databricks
+  discovered: '2026-05-07'
+  source: seed
+- slug: pinterest
+  discovered: '2026-05-07'
+  source: seed
+- slug: reddit
+  discovered: '2026-05-07'
+  source: seed
+- slug: roblox
+  discovered: '2026-05-07'
+  source: seed
+- slug: robinhood
+  discovered: '2026-05-07'
+  source: seed
+- slug: chime
+  discovered: '2026-05-07'
+  source: seed
+lever: []
+ashby:
+- slug: linear
+  discovered: '2026-05-07'
+  source: seed
+- slug: ramp
+  discovered: '2026-05-07'
+  source: seed
+- slug: openai
+  discovered: '2026-05-07'
+  source: seed
+- slug: cursor
+  discovered: '2026-05-07'
+  source: seed
+- slug: notion
+  discovered: '2026-05-07'
+  source: seed
+- slug: replit
+  discovered: '2026-05-07'
+  source: seed
+- slug: arcade
+  discovered: '2026-05-07'
+  source: seed
+- slug: warp
+  discovered: '2026-05-07'
+  source: seed
+disabled:
+- greenhouse:doordash
+- greenhouse:supabase
+- greenhouse:replicate
+- greenhouse:openai
+- greenhouse:huggingface
+- greenhouse:ramp
+- greenhouse:clickup
+- greenhouse:hashicorp
+- greenhouse:confluent
+- greenhouse:snowflake
+- greenhouse:coinbase
+- lever:notion
+- lever:ramp
+- lever:writer
+- lever:shopify
+- lever:lattice
+- lever:retool
+- lever:pulley
+- lever:clay
+- lever:rippling
+- lever:deel
+- lever:gusto
+- lever:clickhouse
+- lever:mongodb
+- lever:vercel
+- lever:posthog
+- ashby:clay
+- ashby:anthropic
