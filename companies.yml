@@ -5,6 +5,9 @@ greenhouse:
 - slug: absci
   discovered: '2026-05-07'
   source: seed
+- slug: adhocteam
+  discovered: '2026-05-08'
+  source: discovered
 - slug: adyen
   discovered: '2026-05-07'
   source: seed
@@ -23,6 +26,9 @@ greenhouse:
 - slug: algolia
   discovered: '2026-05-07'
   source: seed
+- slug: aminohealth
+  discovered: '2026-05-08'
+  source: discovered
 - slug: amplitude
   discovered: '2026-05-07'
   source: seed
@@ -71,6 +77,9 @@ greenhouse:
 - slug: chime
   discovered: '2026-05-07'
   source: seed
+- slug: chronosphere
+  discovered: '2026-05-08'
+  source: discovered
 - slug: circleci
   discovered: '2026-05-07'
   source: seed
@@ -83,6 +92,9 @@ greenhouse:
 - slug: comet
   discovered: '2026-05-07'
   source: seed
+- slug: consensys
+  discovered: '2026-05-08'
+  source: discovered
 - slug: contentful
   discovered: '2026-05-07'
   source: seed
@@ -104,6 +116,9 @@ greenhouse:
 - slug: discord
   discovered: '2026-05-07'
   source: seed
+- slug: dots
+  discovered: '2026-05-08'
+  source: discovered
 - slug: dropbox
   discovered: '2026-05-07'
   source: seed
@@ -164,12 +179,18 @@ greenhouse:
 - slug: iterable
   discovered: '2026-05-07'
   source: seed
+- slug: janetechnologies
+  discovered: '2026-05-08'
+  source: discovered
 - slug: klaviyo
   discovered: '2026-05-07'
   source: seed
 - slug: labelbox
   discovered: '2026-05-07'
   source: seed
+- slug: larkhealth
+  discovered: '2026-05-08'
+  source: discovered
 - slug: lattice
   discovered: '2026-05-07'
   source: seed
@@ -182,6 +203,9 @@ greenhouse:
 - slug: lyft
   discovered: '2026-05-07'
   source: seed
+- slug: magicleapinc
+  discovered: '2026-05-08'
+  source: discovered
 - slug: marqeta
   discovered: '2026-05-07'
   source: seed
@@ -209,6 +233,9 @@ greenhouse:
 - slug: newrelic
   discovered: '2026-05-07'
   source: seed
+- slug: nylas
+  discovered: '2026-05-08'
+  source: discovered
 - slug: okta
   discovered: '2026-05-07'
   source: seed
@@ -218,6 +245,9 @@ greenhouse:
 - slug: pagerduty
   discovered: '2026-05-07'
   source: seed
+- slug: paige
+  discovered: '2026-05-08'
+  source: discovered
 - slug: papaya
   discovered: '2026-05-07'
   source: seed
@@ -290,6 +320,12 @@ greenhouse:
 - slug: temporal
   discovered: '2026-05-07'
   source: seed
+- slug: thumbtack
+  discovered: '2026-05-08'
+  source: discovered
+- slug: trayio
+  discovered: '2026-05-08'
+  source: discovered
 - slug: truelayer
   discovered: '2026-05-07'
   source: seed
@@ -302,18 +338,27 @@ greenhouse:
 - slug: udemy
   discovered: '2026-05-07'
   source: seed
+- slug: updater
+  discovered: '2026-05-08'
+  source: discovered
 - slug: veracode
   discovered: '2026-05-07'
   source: seed
 - slug: vercel
   discovered: '2026-05-07'
   source: seed
+- slug: warbyparker
+  discovered: '2026-05-08'
+  source: discovered
 - slug: watershed
   discovered: '2026-05-07'
   source: seed
 - slug: webflow
   discovered: '2026-05-07'
   source: seed
+- slug: wistia
+  discovered: '2026-05-08'
+  source: discovered
 - slug: wrike
   discovered: '2026-05-07'
   source: seed
@@ -330,21 +375,87 @@ lever:
 - slug: accurate
   discovered: '2026-05-07'
   source: seed
+- slug: aptible
+  discovered: '2026-05-08'
+  source: discovered
+- slug: atlassian
+  discovered: '2026-05-08'
+  source: discovered
+- slug: bandwidth
+  discovered: '2026-05-08'
+  source: discovered
+- slug: blueowl
+  discovered: '2026-05-08'
+  source: discovered
 - slug: brilliant
   discovered: '2026-05-07'
   source: seed
+- slug: byte-2
+  discovered: '2026-05-08'
+  source: discovered
+- slug: captionhealth
+  discovered: '2026-05-08'
+  source: discovered
+- slug: caremessage
+  discovered: '2026-05-08'
+  source: discovered
+- slug: change
+  discovered: '2026-05-08'
+  source: discovered
 - slug: contentsquare
   discovered: '2026-05-07'
   source: seed
+- slug: cortico
+  discovered: '2026-05-08'
+  source: discovered
+- slug: fleetsmith
+  discovered: '2026-05-08'
+  source: discovered
+- slug: flow
+  discovered: '2026-05-08'
+  source: discovered
 - slug: fond
   discovered: '2026-05-07'
   source: seed
+- slug: framework
+  discovered: '2026-05-08'
+  source: discovered
+- slug: frontapp
+  discovered: '2026-05-08'
+  source: discovered
 - slug: fundrise
   discovered: '2026-05-07'
   source: seed
+- slug: getpoint
+  discovered: '2026-05-08'
+  source: discovered
+- slug: givecampus
+  discovered: '2026-05-08'
+  source: discovered
+- slug: headway
+  discovered: '2026-05-08'
+  source: discovered
+- slug: highrise
+  discovered: '2026-05-08'
+  source: discovered
+- slug: invenia
+  discovered: '2026-05-08'
+  source: discovered
+- slug: issuu
+  discovered: '2026-05-08'
+  source: discovered
+- slug: jobscan-2
+  discovered: '2026-05-08'
+  source: discovered
 - slug: jobvite
   discovered: '2026-05-07'
   source: seed
+- slug: joyn
+  discovered: '2026-05-08'
+  source: discovered
+- slug: kong
+  discovered: '2026-05-08'
+  source: discovered
 - slug: kraken
   discovered: '2026-05-07'
   source: seed
@@ -354,24 +465,84 @@ lever:
 - slug: logrocket
   discovered: '2026-05-07'
   source: seed
+- slug: neednova
+  discovered: '2026-05-08'
+  source: discovered
+- slug: neuralink
+  discovered: '2026-05-08'
+  source: discovered
+- slug: outschool
+  discovered: '2026-05-08'
+  source: discovered
 - slug: palantir
   discovered: '2026-05-07'
   source: seed
+- slug: peregrine
+  discovered: '2026-05-08'
+  source: discovered
 - slug: plaid
   discovered: '2026-05-07'
   source: seed
+- slug: protocol
+  discovered: '2026-05-08'
+  source: discovered
+- slug: reifyhealth
+  discovered: '2026-05-08'
+  source: discovered
+- slug: rescale
+  discovered: '2026-05-08'
+  source: discovered
 - slug: revel
   discovered: '2026-05-07'
   source: seed
+- slug: revolut
+  discovered: '2026-05-08'
+  source: discovered
+- slug: ribbonhealth
+  discovered: '2026-05-08'
+  source: discovered
+- slug: scribd
+  discovered: '2026-05-08'
+  source: discovered
+- slug: semanticbits
+  discovered: '2026-05-08'
+  source: discovered
+- slug: sensortower
+  discovered: '2026-05-08'
+  source: discovered
+- slug: sentilink
+  discovered: '2026-05-08'
+  source: discovered
+- slug: siteline
+  discovered: '2026-05-08'
+  source: discovered
+- slug: skool
+  discovered: '2026-05-08'
+  source: discovered
+- slug: skydio
+  discovered: '2026-05-08'
+  source: discovered
 - slug: spotify
   discovered: '2026-05-07'
   source: seed
 - slug: sugarcrm
   discovered: '2026-05-07'
   source: seed
+- slug: thoughtexchange
+  discovered: '2026-05-08'
+  source: discovered
+- slug: tophat
+  discovered: '2026-05-08'
+  source: discovered
 - slug: wealthfront
   discovered: '2026-05-07'
   source: seed
+- slug: x-claim
+  discovered: '2026-05-08'
+  source: discovered
+- slug: zipari
+  discovered: '2026-05-08'
+  source: discovered
 ashby:
 - slug: anyscale
   discovered: '2026-05-07'
