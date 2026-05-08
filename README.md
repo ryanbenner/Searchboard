@@ -1,6 +1,6 @@
 # JobScraper
 
-Personal daily job-search pipeline. Pulls listings from sustainable APIs
+Daily job-search pipeline. Pulls listings from sustainable APIs
 (Greenhouse, Lever, Ashby, RemoteOK, Remotive, We Work Remotely, HN
 Who's Hiring), filters them against `profile.yml`, asks Claude Haiku
 to rank survivors, and emails me a digest each morning.
