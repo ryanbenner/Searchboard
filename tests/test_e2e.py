@@ -35,6 +35,8 @@ def test_full_pipeline(tmp_path, monkeypatch):
     respx.get(host="api.ashbyhq.com").mock(return_value=httpx.Response(404))
     respx.get("https://hn.algolia.com/api/v1/search").mock(return_value=httpx.Response(200, json={"hits": []}))
 
+    monkeypatch.setattr(cli, "verify_links", lambda jobs, **kw: jobs)
+
     def fake_rank(jobs, profile, client=None):
         for j in jobs:
             j.score = 75

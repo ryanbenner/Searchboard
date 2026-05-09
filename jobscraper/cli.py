@@ -10,6 +10,7 @@ from jobscraper.digest import write_xlsx, render_markdown
 from jobscraper.email import send_digest
 from jobscraper.filter import hard_filter
 from jobscraper.rank import rank_jobs
+from jobscraper.verify import verify_links
 from jobscraper.sources.greenhouse import Greenhouse
 from jobscraper.sources.lever import Lever
 from jobscraper.sources.ashby import Ashby
@@ -65,7 +66,11 @@ def cmd_run(_args) -> int:
     filtered = hard_filter(raw, profile)
     print(f"raw={len(raw)} filtered={len(filtered)}", file=sys.stderr)
 
-    ranked = rank_jobs(filtered, profile)
+    verified = verify_links(filtered)
+    print(f"verified={len(verified)} (dropped {len(filtered) - len(verified)} dead links)",
+          file=sys.stderr)
+
+    ranked = rank_jobs(verified, profile)
 
     store = Store(DATA_DIR / "seen.sqlite")
     store.upsert(ranked, today=today)

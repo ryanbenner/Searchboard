@@ -26,6 +26,7 @@ def test_cli_run_end_to_end(tmp_path, monkeypatch):
     fake_src.fetch.return_value = [_j("greenhouse:anthropic:1")]
     monkeypatch.setattr(cli, "build_sources",
                         lambda profile, companies: [fake_src])
+    monkeypatch.setattr(cli, "verify_links", lambda jobs, **kw: jobs)
 
     def fake_rank(jobs, profile, client=None):
         for j in jobs: j.score = 90; j.rationale = "great match"
