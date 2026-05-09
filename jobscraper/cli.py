@@ -21,6 +21,14 @@ from jobscraper.store import Store
 
 
 DATA_DIR = Path("data")
+SCORE_FLOOR = 50
+TOP_N = 100
+
+
+def _top(jobs):
+    qualifying = [j for j in jobs if (j.score or 0) >= SCORE_FLOOR]
+    qualifying.sort(key=lambda x: -(x.score or 0))
+    return qualifying[:TOP_N]
 
 
 def build_sources(profile: Profile, companies: Companies):
@@ -66,19 +74,26 @@ def cmd_run(_args) -> int:
     new_today = [by_id[j.id] for j in new_today if j.id in by_id]
     still_open = [by_id[j.id] for j in still_open if j.id in by_id]
 
+    new_today_top = _top(new_today)
+    still_open_top = _top(still_open)
+    all_ranked_top = _top(ranked)
+    print(f"ranked={len(ranked)} new_top={len(new_today_top)} "
+          f"still_top={len(still_open_top)}", file=sys.stderr)
+
     snap = DATA_DIR / f"{today.isoformat()}.xlsx"
-    write_xlsx(snap, new_today=new_today, still_open=still_open, all_ranked=ranked)
+    write_xlsx(snap, new_today=new_today_top, still_open=still_open_top,
+               all_ranked=all_ranked_top)
     latest = DATA_DIR / "latest.xlsx"
     latest.write_bytes(snap.read_bytes())
 
-    md = render_markdown(new_today, top_n=15)
+    md = render_markdown(new_today_top, top_n=15)
     send_digest(
         host=os.environ["SMTP_HOST"],
         port=int(os.environ["SMTP_PORT"]),
         user=os.environ["SMTP_USER"],
         password=os.environ["SMTP_PASS"],
         to=os.environ["EMAIL_TO"],
-        subject=f"JobScraper {today.isoformat()} — {len(new_today)} new",
+        subject=f"JobScraper {today.isoformat()} — {len(new_today_top)} new",
         markdown_body=md,
         xlsx_path=latest,
     )

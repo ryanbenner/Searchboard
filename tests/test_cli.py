@@ -7,7 +7,7 @@ from jobscraper import cli
 from jobscraper.job import Job
 
 
-def _j(jid, title="Junior FS", score=None):
+def _j(jid, title="Junior Software Engineer", score=None):
     return Job(
         id=jid, source=jid.split(":")[0], company="ACo", title=title,
         location="Remote", remote=True, salary_min=80000, salary_max=120000,

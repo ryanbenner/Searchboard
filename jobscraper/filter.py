@@ -4,6 +4,25 @@ from jobscraper.config import Profile
 from jobscraper.job import Job
 
 
+_RELEVANT_ROLE_RE = re.compile(
+    r"\b("
+    r"engineer|developer|programmer|"
+    r"swe|sde|"
+    r"front[\s-]?end|back[\s-]?end|full[\s-]?stack|"
+    r"web|mobile|ios|android|"
+    r"machine\s+learning|"
+    r"data\s+engineer|data\s+scientist|data\s+analyst|"
+    r"devops|sre|site\s+reliability|platform|infrastructure|"
+    r"new\s+grad|intern"
+    r")\b",
+    re.IGNORECASE,
+)
+
+
+def _relevant_role(j: Job) -> bool:
+    return bool(_RELEVANT_ROLE_RE.search(j.title or ""))
+
+
 def _location_ok(j: Job, p: Profile) -> bool:
     if j.remote and p.location.remote_ok:
         return True
@@ -43,6 +62,7 @@ def hard_filter(jobs: list[Job], p: Profile) -> list[Job]:
         j for j in jobs
         if _location_ok(j, p)
         and _title_ok(j, p)
+        and _relevant_role(j)
         and not _excluded_keyword(j, p)
         and _salary_ok(j, p)
         and _company_ok(j, p)

@@ -4,8 +4,8 @@ target_roles: [Full-stack Engineer]
 seniority:
   years_experience: 0.5
   bands: [new grad, junior]
-  exclude_bands_hard: [director, vp, manager]
-  exclude_bands_soft: [senior, staff]
+  exclude_bands_hard: [director, vp, manager, senior, staff]
+  exclude_bands_soft: []
 location:
   remote_ok: true
   onsite_metros: [San Diego]

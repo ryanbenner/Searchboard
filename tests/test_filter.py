@@ -38,8 +38,28 @@ def test_filter_drops_director_titles():
     assert hard_filter(jobs, PROFILE) == []
 
 
-def test_filter_keeps_senior_titles():
+def test_filter_drops_senior_titles():
     jobs = [_j(title="Senior Software Engineer")]
+    assert hard_filter(jobs, PROFILE) == []
+
+
+def test_filter_drops_irrelevant_role():
+    jobs = [_j(title="Licensed Therapist")]
+    assert hard_filter(jobs, PROFILE) == []
+
+
+def test_filter_keeps_software_engineer():
+    jobs = [_j(title="Software Engineer")]
+    assert len(hard_filter(jobs, PROFILE)) == 1
+
+
+def test_filter_keeps_intern():
+    jobs = [_j(title="Software Engineering Intern")]
+    assert len(hard_filter(jobs, PROFILE)) == 1
+
+
+def test_filter_keeps_full_stack_developer():
+    jobs = [_j(title="Full-Stack Developer")]
     assert len(hard_filter(jobs, PROFILE)) == 1
 
 
