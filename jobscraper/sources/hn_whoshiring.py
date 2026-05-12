@@ -4,6 +4,7 @@ import httpx
 from jobscraper.job import Job, make_id
 from jobscraper.sources import register
 from jobscraper.sources.base import Source
+from jobscraper.url_filter import looks_like_job_url
 
 
 _HTML = re.compile(r"<[^>]+>")
@@ -66,8 +67,14 @@ class HNWhosHiring(Source):
                 posted = datetime.fromtimestamp(ts, tz=timezone.utc).date()
             except (ValueError, OSError):
                 posted = None
-        m = re.search(r"https?://\S+", text)
-        url = m.group(0).rstrip(").,") if m else f"https://news.ycombinator.com/item?id={c['id']}"
+        url = None
+        for m in re.finditer(r"https?://\S+", text):
+            candidate = m.group(0).rstrip(").,;\"'<>")
+            if looks_like_job_url(candidate):
+                url = candidate
+                break
+        if not url:
+            return None
         sm = re.search(r"\$(\d{2,3})k\s*[–-]\s*\$?(\d{2,3})k", text)
         salary_min = int(sm.group(1)) * 1000 if sm else None
         salary_max = int(sm.group(2)) * 1000 if sm else None

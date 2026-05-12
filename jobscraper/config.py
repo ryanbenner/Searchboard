@@ -14,6 +14,7 @@ class Seniority(BaseModel):
 
 class Location(BaseModel):
     remote_ok: bool
+    remote_country: Optional[str] = None
     onsite_metros: list[str]
     exclude_metros: list[str] = []
 

@@ -28,6 +28,10 @@ class Store:
         self._conn = sqlite3.connect(self.path)
         self._conn.row_factory = sqlite3.Row
         self._conn.executescript(_SCHEMA)
+        try:
+            self._conn.execute("ALTER TABLE seen ADD COLUMN sent_at DATE")
+        except sqlite3.OperationalError:
+            pass
         self._conn.commit()
 
     def upsert(self, jobs: list[Job], today: date | None = None) -> None:
@@ -62,6 +66,28 @@ class Store:
         with self._conn:
             self._conn.execute(
                 "UPDATE seen SET applied = 1, notes = ? WHERE id = ?", (notes, job_id)
+            )
+
+    def unsent_top(self, today: date, score_floor: int = 50,
+                   limit: int = 15) -> list[Job]:
+        rows = self._conn.execute("""
+            SELECT * FROM seen
+            WHERE sent_at IS NULL
+              AND ranked_score >= ?
+              AND last_seen = ?
+            ORDER BY ranked_score DESC
+            LIMIT ?
+        """, (score_floor, today.isoformat(), limit)).fetchall()
+        return [self._row_to_job(r) for r in rows]
+
+    def mark_sent(self, ids: list[str], today: date) -> None:
+        if not ids:
+            return
+        placeholders = ",".join("?" * len(ids))
+        with self._conn:
+            self._conn.execute(
+                f"UPDATE seen SET sent_at = ? WHERE id IN ({placeholders})",
+                (today.isoformat(), *ids),
             )
 
     @staticmethod

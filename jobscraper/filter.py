@@ -4,6 +4,53 @@ from jobscraper.config import Profile
 from jobscraper.job import Job
 
 
+_US_TOKEN_RE = re.compile(
+    r"\b("
+    r"USA|US|U\.S\.|United\s+States|America|"
+    r"AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|"
+    r"ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|"
+    r"OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|"
+    r"New\s+York|Los\s+Angeles|San\s+Francisco|Chicago|Boston|"
+    r"Seattle|Austin|Denver|Atlanta|Miami|Portland|"
+    r"San\s+Diego|Orange\s+County|Irvine"
+    r")\b"
+)
+
+_NON_US_TOKEN_RE = re.compile(
+    r"\b("
+    r"UK|United\s+Kingdom|Britain|England|Scotland|Ireland|"
+    r"Canada|Canadian|Toronto|Vancouver|Montreal|"
+    r"EU|Europe|European|EMEA|EEA|Eurozone|"
+    r"Germany|France|Spain|Italy|Netherlands|Sweden|Norway|"
+    r"Denmark|Finland|Poland|Portugal|Switzerland|Austria|Belgium|"
+    r"APAC|Asia|Japan|China|Singapore|Hong\s+Kong|Korea|"
+    r"India|Pakistan|Bangladesh|"
+    r"Australia|New\s+Zealand|"
+    r"LATAM|Latin\s+America|Mexico|Brazil|Argentina|Colombia|Chile|"
+    r"Africa|South\s+Africa|Egypt|Nigeria|Kenya|"
+    r"Middle\s+East|UAE|Dubai|Saudi|Israel"
+    r")\b"
+)
+
+_GENERIC_REMOTE_RE = re.compile(
+    r"\b(remote|anywhere|worldwide|global|distributed)\b",
+    re.IGNORECASE,
+)
+
+
+def _remote_country_ok(j: Job, p: Profile) -> bool:
+    if getattr(p.location, "remote_country", None) != "US":
+        return True
+    loc = j.location or ""
+    if _US_TOKEN_RE.search(loc):
+        return True
+    if _NON_US_TOKEN_RE.search(loc):
+        return False
+    if _GENERIC_REMOTE_RE.search(loc) or not loc.strip():
+        return True
+    return False
+
+
 _RELEVANT_ROLE_RE = re.compile(
     r"\b("
     r"engineer|developer|programmer|"
@@ -25,7 +72,7 @@ def _relevant_role(j: Job) -> bool:
 
 def _location_ok(j: Job, p: Profile) -> bool:
     if j.remote and p.location.remote_ok:
-        return True
+        return _remote_country_ok(j, p)
     if not p.location.onsite_metros:
         return j.remote and p.location.remote_ok
     loc_lower = (j.location or "").lower()

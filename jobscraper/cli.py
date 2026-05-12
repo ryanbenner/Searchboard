@@ -24,6 +24,7 @@ from jobscraper.store import Store
 DATA_DIR = Path("data")
 SCORE_FLOOR = 50
 TOP_N = 100
+DIGEST_LIMIT = 15
 
 
 def _top(jobs):
@@ -74,34 +75,42 @@ def cmd_run(_args) -> int:
 
     store = Store(DATA_DIR / "seen.sqlite")
     store.upsert(ranked, today=today)
-    new_today, still_open = store.partition(today)
-    by_id = {j.id: j for j in ranked}
-    new_today = [by_id[j.id] for j in new_today if j.id in by_id]
-    still_open = [by_id[j.id] for j in still_open if j.id in by_id]
 
-    new_today_top = _top(new_today)
-    still_open_top = _top(still_open)
+    digest_jobs = store.unsent_top(today, score_floor=SCORE_FLOOR,
+                                   limit=DIGEST_LIMIT)
+    by_id = {j.id: j for j in ranked}
+    # Hydrate digest jobs with full Job fields (location, rationale, etc.)
+    # from the in-memory ranked list — store rows lack those.
+    digest_full = [by_id[j.id] for j in digest_jobs if j.id in by_id]
+
     all_ranked_top = _top(ranked)
-    print(f"ranked={len(ranked)} new_top={len(new_today_top)} "
-          f"still_top={len(still_open_top)}", file=sys.stderr)
+    still_open_full = [j for j in all_ranked_top
+                       if j.id not in {d.id for d in digest_full}]
+    print(f"ranked={len(ranked)} digest={len(digest_full)} "
+          f"all_top={len(all_ranked_top)}", file=sys.stderr)
 
     snap = DATA_DIR / f"{today.isoformat()}.xlsx"
-    write_xlsx(snap, new_today=new_today_top, still_open=still_open_top,
+    write_xlsx(snap, new_today=digest_full, still_open=still_open_full,
                all_ranked=all_ranked_top)
     latest = DATA_DIR / "latest.xlsx"
     latest.write_bytes(snap.read_bytes())
 
-    md = render_markdown(new_today_top, top_n=15)
+    if not digest_full:
+        print("no unsent jobs above floor; skipping email", file=sys.stderr)
+        return 0
+
+    md = render_markdown(digest_full, top_n=DIGEST_LIMIT)
     send_digest(
         host=os.environ["SMTP_HOST"],
         port=int(os.environ["SMTP_PORT"]),
         user=os.environ["SMTP_USER"],
         password=os.environ["SMTP_PASS"],
         to=os.environ["EMAIL_TO"],
-        subject=f"JobScraper {today.isoformat()} — {len(new_today_top)} new",
+        subject=f"JobScraper {today.isoformat()} — {len(digest_full)} new",
         markdown_body=md,
         xlsx_path=latest,
     )
+    store.mark_sent([j.id for j in digest_full], today)
     return 0
 
 

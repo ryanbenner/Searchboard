@@ -13,3 +13,9 @@ docs/
 
 # Generated data — kept locally, not tracked.
 data/
+
+# Personal profile — restored from private data repo at runtime.
+profile.yml
+
+# Cloned data repo (workflow scratch dir).
+_data_repo/

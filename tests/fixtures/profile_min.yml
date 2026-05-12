@@ -8,6 +8,7 @@ seniority:
   exclude_bands_soft: []
 location:
   remote_ok: true
+  remote_country: US
   onsite_metros: [San Diego]
   exclude_metros: []
 compensation:

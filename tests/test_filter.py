@@ -63,6 +63,51 @@ def test_filter_keeps_full_stack_developer():
     assert len(hard_filter(jobs, PROFILE)) == 1
 
 
+def test_us_only_keeps_explicit_us_remote():
+    jobs = [_j(location="Remote, USA")]
+    assert len(hard_filter(jobs, PROFILE)) == 1
+
+
+def test_us_only_keeps_us_state_remote():
+    jobs = [_j(location="Remote - California")]
+    assert len(hard_filter(jobs, PROFILE)) == 1
+
+
+def test_us_only_drops_uk_remote():
+    jobs = [_j(location="Remote, UK")]
+    assert hard_filter(jobs, PROFILE) == []
+
+
+def test_us_only_drops_canada_remote():
+    jobs = [_j(location="Remote (Canada)")]
+    assert hard_filter(jobs, PROFILE) == []
+
+
+def test_us_only_drops_emea_remote():
+    jobs = [_j(location="EMEA Remote")]
+    assert hard_filter(jobs, PROFILE) == []
+
+
+def test_us_only_us_wins_over_canada():
+    jobs = [_j(location="Remote, US or Canada")]
+    assert len(hard_filter(jobs, PROFILE)) == 1
+
+
+def test_us_only_keeps_generic_remote():
+    jobs = [_j(location="Remote")]
+    assert len(hard_filter(jobs, PROFILE)) == 1
+
+
+def test_us_only_keeps_anywhere():
+    jobs = [_j(location="Anywhere")]
+    assert len(hard_filter(jobs, PROFILE)) == 1
+
+
+def test_us_only_keeps_empty_location_when_remote():
+    jobs = [_j(location="", remote=True)]
+    assert len(hard_filter(jobs, PROFILE)) == 1
+
+
 def test_filter_drops_excluded_keyword():
     jobs = [_j(description_text="Must obtain a secret clearance.")]
     assert hard_filter(jobs, PROFILE) == []

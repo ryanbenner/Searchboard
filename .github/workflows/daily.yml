@@ -10,6 +10,8 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-latest
+    env:
+      DATA_REPO: ryanbenner/JobScraper-data
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -17,6 +19,20 @@ jobs:
           enable-cache: true
       - name: Install
         run: uv sync --extra dev
+
+      - name: Restore profile + prior data
+        env:
+          DATA_REPO_TOKEN: ${{ secrets.DATA_REPO_TOKEN }}
+        run: |
+          set -e
+          git clone --depth=1 \
+            "https://x-access-token:${DATA_REPO_TOKEN}@github.com/${DATA_REPO}.git" \
+            _data_repo
+          mkdir -p data
+          cp -f _data_repo/profile.yml . 2>/dev/null || \
+            (echo "FATAL: profile.yml missing in data repo" && exit 1)
+          cp -f _data_repo/seen.sqlite data/ 2>/dev/null || true
+
       - name: Run pipeline
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -26,14 +42,33 @@ jobs:
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           EMAIL_TO:  ${{ secrets.EMAIL_TO }}
         run: uv run python -m jobscraper run
-      - name: Commit results
+
+      - name: Push data to private repo
+        env:
+          DATA_REPO_TOKEN: ${{ secrets.DATA_REPO_TOKEN }}
+        run: |
+          set -e
+          cd _data_repo
+          git config user.name  "jobscraper-bot"
+          git config user.email "actions@github.com"
+          cp -f ../data/seen.sqlite . 2>/dev/null || true
+          cp -f ../data/*.xlsx . 2>/dev/null || true
+          git add -A
+          if git diff --staged --quiet; then
+            echo "no data changes"
+          else
+            git commit -m "$(date -u +%F) run"
+            git push "https://x-access-token:${DATA_REPO_TOKEN}@github.com/${DATA_REPO}.git" HEAD:main
+          fi
+
+      - name: Commit companies.yml
         run: |
           git config user.name  "jobscraper-bot"
           git config user.email "actions@github.com"
-          git add data/ companies.yml
-          if git diff --staged --quiet; then
-            echo "no changes"
+          if git diff --quiet companies.yml; then
+            echo "no companies changes"
           else
-            git commit -m "daily run $(date -u +%F)"
+            git add companies.yml
+            git commit -m "discovered slugs $(date -u +%F)"
             git push
           fi

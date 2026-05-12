@@ -1,0 +1,35 @@
+name: Your Name
+email: you@example.com
+
+target_roles:
+  - Full-stack Engineer
+  - Frontend Engineer
+  - Backend Engineer
+
+seniority:
+  years_experience: 0
+  bands: [new grad, junior, entry-level, associate, I, II]
+  exclude_bands_hard: [director, vp, head of, manager, senior, staff, principal, lead]
+  exclude_bands_soft: []
+
+location:
+  remote_ok: true
+  remote_country: US
+  onsite_metros: []
+  exclude_metros: []
+
+compensation:
+  min_usd: 0
+  target_usd: 0
+
+skills:
+  strong:   []
+  some:     []
+  learning: []
+
+exclusions:
+  industries: []
+  companies: []
+  keywords: []
+
+highlights: []

@@ -15,7 +15,7 @@ def _slugify(s: str) -> str:
 @register("remoteok")
 class RemoteOK(Source):
     URL = "https://remoteok.com/api"
-    UA = "JobScraper/0.1 (personal use; scrubbed@example.com)"
+    UA = "JobScraper/0.2 (+https://github.com/ryanbenner/JobScraper)"
 
     def __init__(self, timeout: float = 20.0):
         self.timeout = timeout

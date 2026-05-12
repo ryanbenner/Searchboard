@@ -52,3 +52,36 @@ def test_cli_run_end_to_end(tmp_path, monkeypatch):
     assert wb["New today"].cell(2, 1).value == 90
     assert sent["to"] == "u@example.com"
     assert "great match" in sent["markdown_body"]
+
+    # Second run with the same job should NOT re-email — sent queue drained.
+    sent.clear()
+    cli.main(["run"])
+    assert sent == {}, "second run must not email already-sent jobs"
+
+
+def test_cli_skips_email_when_no_unsent_jobs(tmp_path, monkeypatch):
+    shutil.copy(Path(__file__).parent / "fixtures" / "profile_min.yml", tmp_path / "profile.yml")
+    shutil.copy(Path(__file__).parent / "fixtures" / "companies_min.yml", tmp_path / "companies.yml")
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "data").mkdir()
+
+    fake_src = MagicMock()
+    fake_src.fetch.return_value = [_j("greenhouse:anthropic:1")]
+    monkeypatch.setattr(cli, "build_sources",
+                        lambda profile, companies: [fake_src])
+    monkeypatch.setattr(cli, "verify_links", lambda jobs, **kw: jobs)
+    # Score below floor → not eligible
+    monkeypatch.setattr(cli, "rank_jobs",
+                        lambda jobs, profile, client=None: [
+                            setattr(j, "score", 30) or j for j in jobs
+                        ])
+
+    for k in ("SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS", "EMAIL_TO", "ANTHROPIC_API_KEY"):
+        monkeypatch.setenv(k, "x")
+    monkeypatch.setenv("SMTP_PORT", "587")
+
+    called = []
+    monkeypatch.setattr(cli, "send_digest", lambda **kw: called.append(kw))
+
+    cli.main(["run"])
+    assert called == [], "should not send email when no eligible jobs"
