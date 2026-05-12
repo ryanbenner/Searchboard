@@ -11,6 +11,5 @@ __pycache__/
 # Documentation/specs/plans live on disk but are never tracked.
 docs/
 
-# Generated daily snapshots — DO commit them; they're the historical record.
-# But local runs may produce in-flight files we don't want:
-data/*.tmp
+# Generated data — kept locally, not tracked.
+data/
