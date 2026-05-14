@@ -737,6 +737,9 @@ smartrecruiters:
 - slug: Canva
   discovered: '2026-05-13'
   source: seed
+- slug: Dailymotion
+  discovered: '2026-05-14'
+  source: discovered
 - slug: Glean
   discovered: '2026-05-13'
   source: seed
