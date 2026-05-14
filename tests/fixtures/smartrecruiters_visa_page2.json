@@ -1,0 +1,25 @@
+{
+  "offset": 2,
+  "limit": 2,
+  "totalFound": 3,
+  "content": [
+    {
+      "id": "744000122509270",
+      "name": "Senior Product Designer",
+      "refNumber": "REF97310C",
+      "company": {"identifier": "Visa", "name": "Visa"},
+      "releasedDate": "2026-05-03T08:30:00.000Z",
+      "location": {
+        "city": "Foster City",
+        "region": "CA",
+        "country": "us",
+        "remote": false,
+        "hybrid": false,
+        "fullLocation": "Foster City, CA, United States"
+      },
+      "department": {"id": "868999", "label": "Design"},
+      "typeOfEmployment": {"id": "permanent", "label": "Full-time"},
+      "experienceLevel": {"id": "mid_senior_level", "label": "Mid-Senior Level"}
+    }
+  ]
+}

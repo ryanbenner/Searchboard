@@ -14,6 +14,7 @@ from jobscraper.verify import verify_links
 from jobscraper.sources.greenhouse import Greenhouse
 from jobscraper.sources.lever import Lever
 from jobscraper.sources.ashby import Ashby
+from jobscraper.sources.smartrecruiters import SmartRecruiters
 from jobscraper.sources.remoteok import RemoteOK
 from jobscraper.sources.remotive import Remotive
 from jobscraper.sources.weworkremotely import WeWorkRemotely
@@ -38,6 +39,7 @@ def build_sources(profile: Profile, companies: Companies):
         Greenhouse(slugs=[e.slug for e in companies.greenhouse]),
         Lever(slugs=[e.slug for e in companies.lever]),
         Ashby(slugs=[e.slug for e in companies.ashby]),
+        SmartRecruiters(slugs=[e.slug for e in companies.smartrecruiters]),
         RemoteOK(),
         Remotive(),
         WeWorkRemotely(),

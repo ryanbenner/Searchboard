@@ -1,0 +1,40 @@
+{
+  "offset": 0,
+  "limit": 2,
+  "totalFound": 3,
+  "content": [
+    {
+      "id": "744000122509268",
+      "name": "Sr. SW Engineer",
+      "refNumber": "REF97308A",
+      "company": {"identifier": "Visa", "name": "Visa"},
+      "releasedDate": "2026-04-23T16:54:54.835Z",
+      "location": {
+        "city": "Austin",
+        "region": "TX",
+        "country": "us",
+        "remote": false,
+        "hybrid": true,
+        "fullLocation": "Austin, TX, United States"
+      },
+      "department": {"id": "868537", "label": "Technology and Operations"},
+      "typeOfEmployment": {"id": "permanent", "label": "Full-time"},
+      "experienceLevel": {"id": "mid_senior_level", "label": "Mid-Senior Level"}
+    },
+    {
+      "id": "744000122509269",
+      "name": "Staff Software Engineer (Remote)",
+      "refNumber": "REF97309B",
+      "company": {"identifier": "Visa", "name": "Visa"},
+      "releasedDate": "2026-05-01T00:00:00.000Z",
+      "location": {
+        "country": "us",
+        "remote": true,
+        "fullLocation": "Remote, United States"
+      },
+      "department": {"id": "868537", "label": "Technology and Operations"},
+      "typeOfEmployment": {"id": "permanent", "label": "Full-time"},
+      "experienceLevel": {"id": "mid_senior_level", "label": "Mid-Senior Level"}
+    }
+  ]
+}

@@ -733,6 +733,25 @@ ashby:
 - slug: weave
   discovered: '2026-05-07'
   source: seed
+smartrecruiters:
+- slug: Canva
+  discovered: '2026-05-13'
+  source: seed
+- slug: Glean
+  discovered: '2026-05-13'
+  source: seed
+- slug: ServiceNow
+  discovered: '2026-05-13'
+  source: seed
+- slug: Visa
+  discovered: '2026-05-13'
+  source: seed
+- slug: Wayfair
+  discovered: '2026-05-13'
+  source: seed
+- slug: Wise
+  discovered: '2026-05-13'
+  source: seed
 disabled:
 - ashby:100ms
 - ashby:absci

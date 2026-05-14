@@ -63,7 +63,11 @@ class Companies(BaseModel):
     greenhouse: list[CompanyEntry] = []
     lever: list[CompanyEntry] = []
     ashby: list[CompanyEntry] = []
+    smartrecruiters: list[CompanyEntry] = []
     disabled: list[str] = []
+
+
+ATS_KEYS = ("greenhouse", "lever", "ashby", "smartrecruiters")
 
 
 def load_companies(path: str | Path) -> Companies:
@@ -74,7 +78,7 @@ def load_companies(path: str | Path) -> Companies:
 def save_companies(c: Companies, path: str | Path) -> None:
     """Write companies.yml. Dedups slugs per-ATS keeping the earliest entry."""
     seen: dict[tuple[str, str], CompanyEntry] = {}
-    for ats in ("greenhouse", "lever", "ashby"):
+    for ats in ATS_KEYS:
         for e in getattr(c, ats):
             key = (ats, e.slug)
             existing = seen.get(key)
@@ -83,13 +87,9 @@ def save_companies(c: Companies, path: str | Path) -> None:
     deduped = Companies(disabled=sorted(set(c.disabled)))
     for (ats, _slug), entry in seen.items():
         getattr(deduped, ats).append(entry)
-    for ats in ("greenhouse", "lever", "ashby"):
+    for ats in ATS_KEYS:
         getattr(deduped, ats).sort(key=lambda e: e.slug)
 
-    out = {
-        "greenhouse": [e.model_dump() for e in deduped.greenhouse],
-        "lever":      [e.model_dump() for e in deduped.lever],
-        "ashby":      [e.model_dump() for e in deduped.ashby],
-        "disabled":   deduped.disabled,
-    }
+    out = {ats: [e.model_dump() for e in getattr(deduped, ats)] for ats in ATS_KEYS}
+    out["disabled"] = deduped.disabled
     Path(path).write_text(yaml.safe_dump(out, sort_keys=False))
