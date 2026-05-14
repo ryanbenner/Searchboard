@@ -54,7 +54,7 @@ class Greenhouse(Source):
 
     def _to_job(self, slug: str, j: dict) -> Job:
         posting_id = str(j["id"])
-        loc_name = (j.get("location") or {}).get("name", "")
+        loc_name = (j.get("location") or {}).get("name") or ""
         remote = "remote" in loc_name.lower()
         lo, hi = _parse_salary(j.get("metadata") or [])
         posted = None
