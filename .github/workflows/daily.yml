@@ -49,8 +49,8 @@ jobs:
         run: |
           set -e
           cd _data_repo
-          git config user.name  "jobscraper-bot"
-          git config user.email "actions@github.com"
+          git config user.name  "Ryan Benner"
+          git config user.email "104870834+ryanbenner@users.noreply.github.com"
           cp -f ../data/seen.sqlite . 2>/dev/null || true
           cp -f ../data/*.xlsx . 2>/dev/null || true
           git add -A
@@ -63,8 +63,8 @@ jobs:
 
       - name: Commit companies.yml
         run: |
-          git config user.name  "jobscraper-bot"
-          git config user.email "actions@github.com"
+          git config user.name  "Ryan Benner"
+          git config user.email "104870834+ryanbenner@users.noreply.github.com"
           if git diff --quiet companies.yml; then
             echo "no companies changes"
           else
