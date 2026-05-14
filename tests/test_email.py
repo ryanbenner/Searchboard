@@ -1,6 +1,25 @@
 from unittest.mock import MagicMock, patch
 from pathlib import Path
-from jobscraper.email import send_digest
+from jobscraper.email import _md_to_html, send_digest
+
+
+def test_md_to_html_converts_links_so_url_has_no_trailing_paren():
+    md = "- **[Software Engineer](https://jobs.ashbyhq.com/notion/a6311f97)** at *Notion*"
+    html = _md_to_html(md)
+    assert '<a href="https://jobs.ashbyhq.com/notion/a6311f97">Software Engineer</a>' in html
+    assert "](https://" not in html
+    assert "https://jobs.ashbyhq.com/notion/a6311f97)" not in html
+
+
+def test_md_to_html_converts_bold():
+    html = _md_to_html("- **hello** world")
+    assert "<strong>hello</strong>" in html
+    assert "**" not in html
+
+
+def test_md_to_html_converts_italic():
+    html = _md_to_html("- at *Notion* today")
+    assert "<em>Notion</em>" in html
 
 
 def test_send_digest_attaches_xlsx(tmp_path):

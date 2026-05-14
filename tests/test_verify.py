@@ -5,9 +5,9 @@ from jobscraper.job import Job
 from jobscraper.verify import verify_links
 
 
-def _j(jid, url):
+def _j(jid, url, source="x"):
     return Job(
-        id=jid, source="x", company="X", title="Software Engineer",
+        id=jid, source=source, company="X", title="Software Engineer",
         location="Remote", remote=True, salary_min=None, salary_max=None,
         url=url, posted_at=None, seen_at=date.today(), description_text="",
     )
@@ -60,3 +60,38 @@ def test_mixed_batch():
 
 def test_empty_input():
     assert verify_links([]) == []
+
+
+def test_ashby_jobs_skip_http_verify():
+    # Ashby SPA returns 200 even for dead postings; the source's bulk API is
+    # the authoritative liveness signal. Verifier should pass Ashby jobs
+    # through without an HTTP call.
+    jobs = [_j("ashby:1",
+               "https://jobs.ashbyhq.com/notion/a6311f97-4850-4674-a5f3-d9fe5f6f2555",
+               source="ashby")]
+    # No respx mock registered — if verify makes an HTTP call, respx will fail
+    # the test with an unrouted-request error.
+    with respx.mock(assert_all_called=False):
+        assert len(verify_links(jobs)) == 1
+
+
+@respx.mock
+def test_greenhouse_dead_url_redirected_to_careers_dropped():
+    dead = "https://job-boards.greenhouse.io/airbnb/jobs/NONEXISTENT"
+    respx.head(dead).mock(return_value=httpx.Response(
+        302, headers={"location": "/airbnb?error=true"}))
+    respx.head("https://job-boards.greenhouse.io/airbnb?error=true").mock(
+        return_value=httpx.Response(
+            302, headers={"location": "https://careers.airbnb.com/positions/"}))
+    respx.head("https://careers.airbnb.com/positions/").mock(
+        return_value=httpx.Response(200))
+    jobs = [_j("greenhouse:1", dead, source="greenhouse")]
+    assert verify_links(jobs) == []
+
+
+@respx.mock
+def test_greenhouse_live_url_kept():
+    live = "https://job-boards.greenhouse.io/airbnb/jobs/12345"
+    respx.head(live).mock(return_value=httpx.Response(200))
+    jobs = [_j("greenhouse:2", live, source="greenhouse")]
+    assert len(verify_links(jobs)) == 1

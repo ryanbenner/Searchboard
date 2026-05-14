@@ -1,20 +1,33 @@
 from __future__ import annotations
 from email.message import EmailMessage
 from pathlib import Path
+import re
 import smtplib
+
+
+_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+_BOLD_RE = re.compile(r"\*\*([^*]+)\*\*")
+_ITALIC_RE = re.compile(r"(?<!\*)\*([^*]+)\*(?!\*)")
+
+
+def _inline_md(text: str) -> str:
+    text = _LINK_RE.sub(r'<a href="\2">\1</a>', text)
+    text = _BOLD_RE.sub(r"<strong>\1</strong>", text)
+    text = _ITALIC_RE.sub(r"<em>\1</em>", text)
+    return text
 
 
 def _md_to_html(md: str) -> str:
     html_lines = []
     for line in md.splitlines():
         if line.startswith("# "):
-            html_lines.append(f"<h2>{line[2:]}</h2>")
+            html_lines.append(f"<h2>{_inline_md(line[2:])}</h2>")
         elif line.startswith("- "):
-            html_lines.append(f"<li>{line[2:]}</li>")
+            html_lines.append(f"<li>{_inline_md(line[2:])}</li>")
         elif not line.strip():
             html_lines.append("")
         else:
-            html_lines.append(f"<p>{line}</p>")
+            html_lines.append(f"<p>{_inline_md(line)}</p>")
     body = "\n".join(html_lines).replace("<li>", "<ul><li>", 1)
     if "<li>" in body and not body.rstrip().endswith("</ul>"):
         body += "</ul>"
