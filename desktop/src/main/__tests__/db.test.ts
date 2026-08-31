@@ -72,3 +72,15 @@ test('untouched jobs older than 3 weeks age out; acted-on jobs stay', () => {
   expect(db.listJobs().map((j) => j.id).sort()).toEqual(['fresh', 'old:applied', 'old:seen:fresh:post'])
   expect(db.counts().Total).toBe(3)
 })
+
+test('jobs scoring below 45 are hidden unless acted on; unranked stay visible', () => {
+  const p = seed([
+    { id: 'low', score: 30 },
+    { id: 'edge', score: 45 },
+    { id: 'low:applied', score: 30 },
+    { id: 'unranked', score: null },
+  ])
+  const db = new Db(p)
+  db.updateJob('low:applied', { status: 'Applied' })
+  expect(db.listJobs().map((j) => j.id).sort()).toEqual(['edge', 'low:applied', 'unranked'])
+})
