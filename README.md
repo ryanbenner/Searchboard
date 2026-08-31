@@ -106,6 +106,7 @@ app's Settings screen writes it there for you).
 
 ```bash
 gh secret set ANTHROPIC_API_KEY   # paste at the prompt
+gh secret set ANTHROPIC_WORKSPACE_ID  # wrkspc_... id; required for identity-linked keys
 gh secret set DATA_REPO_TOKEN     # fine-grained PAT from step 2
 gh secret set SMTP_HOST -b "smtp.gmail.com"
 gh secret set SMTP_PORT -b "587"

@@ -94,6 +94,7 @@ export function Settings(): React.JSX.Element {
           <section className="panel" style={{ display: 'flex', flexDirection: 'column', gap: 16.8 }}>
             <div className="card-kicker">Keys</div>
             {secretField('ANTHROPIC_API_KEY')}
+            {secretField('ANTHROPIC_WORKSPACE_ID')}
             {emailOnManualRuns && SMTP_KEYS.map(secretField)}
           </section>
           <div style={{ display: 'flex', gap: 11.2, alignItems: 'center' }}>

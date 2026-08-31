@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path'
 import { parseEnv, serializeEnv } from './envfile'
 import { which } from './paths'
 
-const SECRET_KEYS = ['ANTHROPIC_API_KEY', 'SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS', 'EMAIL_TO'] as const
+const SECRET_KEYS = ['ANTHROPIC_API_KEY', 'ANTHROPIC_WORKSPACE_ID', 'SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS', 'EMAIL_TO'] as const
 
 export interface AppConfig {
   codeRepo: string
@@ -12,6 +12,7 @@ export interface AppConfig {
 }
 export interface SecretStatus {
   ANTHROPIC_API_KEY: boolean
+  ANTHROPIC_WORKSPACE_ID: boolean
   SMTP_HOST: boolean
   SMTP_PORT: boolean
   SMTP_USER: boolean

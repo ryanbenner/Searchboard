@@ -76,7 +76,12 @@ def rank_jobs(jobs: list[Job], profile: Profile, client=None) -> list[Job]:
         return jobs
     if client is None:
         from anthropic import Anthropic
-        client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+        # identity-linked api keys are rejected without the workspace header
+        workspace_id = os.environ.get("ANTHROPIC_WORKSPACE_ID")
+        client = Anthropic(
+            api_key=os.environ["ANTHROPIC_API_KEY"],
+            default_headers={"anthropic-workspace-id": workspace_id} if workspace_id else None,
+        )
 
     system_blocks = [{
         "type": "text",
