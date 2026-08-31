@@ -26,11 +26,12 @@ from searchboard.store import Store
 SCORE_FLOOR = 50
 TOP_N = 100
 DIGEST_LIMIT = 15
-MAX_AGE_DAYS = 21
+DIGEST_MAX_AGE_DAYS = 3
+XLSX_MAX_AGE_DAYS = 14
 
 
-def _fresh(jobs, today: date):
-    cutoff = today - timedelta(days=MAX_AGE_DAYS)
+def _fresh(jobs, today: date, max_age_days: int):
+    cutoff = today - timedelta(days=max_age_days)
     return [j for j in jobs if j.posted_at is None or j.posted_at >= cutoff]
 
 
@@ -98,13 +99,13 @@ def cmd_run(args) -> int:
     store.upsert(ranked, today=today)
 
     digest_jobs = store.unsent_top(today, score_floor=SCORE_FLOOR,
-                                   limit=DIGEST_LIMIT, max_age_days=MAX_AGE_DAYS)
+                                   limit=DIGEST_LIMIT, max_age_days=DIGEST_MAX_AGE_DAYS)
     by_id = {j.id: j for j in ranked}
     # Hydrate digest jobs with full Job fields (location, rationale, etc.)
     # from the in-memory ranked list — store rows lack those.
     digest_full = [by_id[j.id] for j in digest_jobs if j.id in by_id]
 
-    all_ranked_top = _top(_fresh(ranked, today))
+    all_ranked_top = _top(_fresh(ranked, today, XLSX_MAX_AGE_DAYS))
     still_open_full = [j for j in all_ranked_top
                        if j.id not in {d.id for d in digest_full}]
     print(f"ranked={len(ranked)} digest={len(digest_full)} "

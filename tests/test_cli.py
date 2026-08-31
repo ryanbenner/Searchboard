@@ -160,16 +160,22 @@ def test_stale_postings_stay_out_of_digest_and_xlsx(tmp_path, monkeypatch):
     fresh = _j("greenhouse:anthropic:2")
     fresh.posted_at = date.today() - timedelta(days=2)
     fresh.url = "https://fresh"
-    cli.build_sources(None, None)[0].fetch.return_value = [stale, fresh]
+    mid = _j("greenhouse:anthropic:3")
+    mid.posted_at = date.today() - timedelta(days=7)
+    mid.url = "https://mid"
+    cli.build_sources(None, None)[0].fetch.return_value = [stale, fresh, mid]
     sent = {}
     monkeypatch.setattr(cli, "send_digest", lambda **kw: sent.update(kw))
     for k in ("SMTP_HOST", "SMTP_USER", "SMTP_PASS", "EMAIL_TO"):
         monkeypatch.setenv(k, "x")
     monkeypatch.setenv("SMTP_PORT", "587")
     cli.main(["run"])
+    # digest: past 3 days only; xlsx: past 2 weeks
     assert "https://fresh" in sent["markdown_body"]
+    assert "https://mid" not in sent["markdown_body"]
     assert "https://stale" not in sent["markdown_body"]
     wb = load_workbook(tmp_path / "data" / "latest.xlsx")
     urls = [ws.cell(r, 9).value for ws in wb.worksheets for r in range(2, ws.max_row + 1)]
     assert "https://fresh" in urls
+    assert "https://mid" in urls
     assert "https://stale" not in urls

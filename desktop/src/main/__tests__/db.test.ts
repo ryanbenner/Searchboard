@@ -56,10 +56,11 @@ test('notes update leaves status untouched', () => {
   expect(j.status).toBe('New')
 })
 
-test('untouched jobs older than 3 weeks age out; acted-on jobs stay', () => {
+test('untouched jobs older than 2 weeks age out; acted-on jobs stay', () => {
   const day = (n: number): string => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10)
   const p = seed([
     { id: 'old:untouched', first_seen: day(30) },
+    { id: 'old:20d', first_seen: day(20) },
     { id: 'old:applied', first_seen: day(30) },
     { id: 'old:seen:fresh:post', first_seen: day(30) },
     { id: 'fresh', first_seen: day(2) },

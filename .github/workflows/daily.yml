@@ -1,7 +1,7 @@
 name: daily
 on:
   schedule:
-    - cron: "0 14 * * *"   # 7am PT (14:00 UTC)
+    - cron: "0 14 * * 1-5"   # 7am PT (14:00 UTC), weekdays only
   workflow_dispatch: {}
 
 permissions:

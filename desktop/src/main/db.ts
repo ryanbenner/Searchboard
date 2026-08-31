@@ -37,14 +37,14 @@ export class Db {
     }
   }
 
-  // untouched postings age out after 3 weeks or below MIN_SCORE; anything the
+  // untouched postings age out after 2 weeks or below MIN_SCORE; anything the
   // user acted on stays. low scores stay stored so the pipeline never re-ranks them
   listJobs(): JobRow[] {
     return this.c
       .prepare(`SELECT * FROM seen
         WHERE (status IS NULL OR status != 'Dismissed')
           AND (applied = 1 OR (
-            COALESCE(posted_at, first_seen) >= date('now', '-21 days')
+            COALESCE(posted_at, first_seen) >= date('now', '-14 days')
             AND (ranked_score IS NULL OR ranked_score >= ${MIN_SCORE})))
         ORDER BY first_seen DESC, id`)
       .all()
