@@ -46,18 +46,25 @@ export function Settings(): React.JSX.Element {
     setSaved(true)
   }
 
-  const secretField = (key: string): React.JSX.Element => (
-    <div className="field" key={key}>
-      <label>{key}</label>
-      <input
-        className="input"
-        type="password"
-        placeholder={secrets?.[key as keyof SecretStatus] ? '•••••• (set)' : 'not set'}
-        value={draftSecrets[key] ?? ''}
-        onChange={(e) => setDraftSecrets((d) => ({ ...d, [key]: e.target.value }))}
-      />
-    </div>
-  )
+  const secretField = (key: string): React.JSX.Element => {
+    const isSet = Boolean(secrets?.[key as keyof SecretStatus])
+    const required = key === 'ANTHROPIC_API_KEY' && !isSet
+    return (
+      <div className="field" key={key}>
+        <label>
+          {key}
+          {required && <span className="required-star">*</span>}
+        </label>
+        <input
+          className={'input' + (required ? ' input-required' : '')}
+          type="password"
+          placeholder={isSet ? '•••••• (set)' : 'not set'}
+          value={draftSecrets[key] ?? ''}
+          onChange={(e) => setDraftSecrets((d) => ({ ...d, [key]: e.target.value }))}
+        />
+      </div>
+    )
+  }
 
   return (
     <>
@@ -96,11 +103,13 @@ export function Settings(): React.JSX.Element {
             {saved && issues.length === 0 && <span className="text-muted" style={{ fontSize: 12.5 }}>Saved — all checks pass.</span>}
           </div>
           {error && <div className="banner banner-error">{error}</div>}
-          {issues.map((i) => (
-            <div className="banner banner-error" key={i.field + i.message}>
-              {i.field}: {i.message}
-            </div>
-          ))}
+          {issues
+            .filter((i) => i.field !== 'ANTHROPIC_API_KEY')
+            .map((i) => (
+              <div className="banner banner-error" key={i.field + i.message}>
+                {i.message}
+              </div>
+            ))}
         </div>
       </div>
     </>

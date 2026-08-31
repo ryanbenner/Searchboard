@@ -7,11 +7,20 @@ export type SyncState = 'idle' | 'syncing' | 'conflict' | 'offline'
 
 export class Sync {
   private timer: NodeJS.Timeout | null = null
+  private queue: Promise<unknown> = Promise.resolve()
 
   constructor(
     private cwd: string,
     private onState: (s: SyncState, detail?: string) => void
   ) {}
+
+  // git refuses concurrent ref updates in one repo ("cannot lock ref"),
+  // so every operation runs through this chain
+  private enqueue(op: () => Promise<SyncState>): Promise<SyncState> {
+    const result = this.queue.then(op, op)
+    this.queue = result.catch(() => {})
+    return result
+  }
 
   private async git(...args: string[]): Promise<string> {
     const { stdout } = await run('git', args, { cwd: this.cwd })
@@ -36,18 +45,24 @@ export class Sync {
     return state
   }
 
-  async pull(): Promise<SyncState> {
-    this.onState('syncing')
-    try {
-      await this.git('pull', '--rebase')
-      this.onState('idle')
-      return 'idle'
-    } catch (e) {
-      return this.fail(e)
-    }
+  pull(): Promise<SyncState> {
+    return this.enqueue(async () => {
+      this.onState('syncing')
+      try {
+        await this.git('pull', '--rebase', '--autostash')
+        this.onState('idle')
+        return 'idle'
+      } catch (e) {
+        return this.fail(e)
+      }
+    })
   }
 
-  async commitAndPush(message: string): Promise<SyncState> {
+  commitAndPush(message: string): Promise<SyncState> {
+    return this.enqueue(() => this.doCommitAndPush(message))
+  }
+
+  private async doCommitAndPush(message: string): Promise<SyncState> {
     this.onState('syncing')
     try {
       await this.git('add', '-A')
@@ -57,7 +72,7 @@ export class Sync {
         await this.git('push')
       } catch (e) {
         if (this.classify(e) === 'offline') throw e
-        await this.git('pull', '--rebase')
+        await this.git('pull', '--rebase', '--autostash')
         await this.git('push')
       }
       this.onState('idle')

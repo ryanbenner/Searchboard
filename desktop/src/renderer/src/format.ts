@@ -13,6 +13,13 @@ export function fmtAgo(isoDate: string | null): string {
   return days <= 0 ? 'today' : `${days}d`
 }
 
+export function fmtErrorDetail(raw: string | undefined): string {
+  if (!raw) return ''
+  const line = raw.split('\n').map((l) => l.trim()).find(Boolean) ?? ''
+  const clean = line.replace(/^(error|fatal|warning):\s*/i, '')
+  return clean.length > 100 ? clean.slice(0, 100) + '…' : clean
+}
+
 export function fmtDuration(ms: number): string {
   const s = Math.round(ms / 1000)
   return s < 60 ? `${s}s` : `${Math.floor(s / 60)}m ${s % 60}s`

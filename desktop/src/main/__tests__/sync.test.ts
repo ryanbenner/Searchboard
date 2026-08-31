@@ -54,3 +54,15 @@ test('rejected push auto-rebases and retries once', async () => {
   expect(await s.commitAndPush('mine')).toBe('idle')
   expect(git(a, 'log', '--oneline').split('\n').filter(Boolean).length).toBeGreaterThanOrEqual(3)
 })
+
+test('concurrent operations serialize instead of racing git', async () => {
+  const { a } = setup()
+  const states: string[] = []
+  const s = new Sync(a, (st) => states.push(st))
+  writeFileSync(join(a, 'seen.sqlite'), 'v2')
+  const [r1, r2] = await Promise.all([s.pull(), s.commitAndPush('m')])
+  expect(r1).toBe('idle')
+  expect(r2).toBe('idle')
+  // ops must not interleave: every 'syncing' is resolved before the next begins
+  expect(states).toEqual(['syncing', 'idle', 'syncing', 'idle'])
+})

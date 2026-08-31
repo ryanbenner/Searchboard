@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'
 import { Shell } from '../App'
+import { fmtErrorDetail } from '../format'
 
 const NAV = [
   ['overview', 'Overview'],
@@ -31,9 +32,9 @@ export function Sidebar(): React.JSX.Element {
       </nav>
       <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 8.4 }}>
         {(s.syncState === 'conflict' || s.syncState === 'offline') && (
-          <div className="banner banner-error">
-            sync: {s.syncState}
-            {s.syncDetail ? ` — ${s.syncDetail.slice(0, 120)}` : ''}
+          <div className="banner banner-error" title={s.syncDetail}>
+            {s.syncState === 'offline' ? "Can't reach GitHub — working offline." : 'Sync hit a snag.'}
+            {s.syncDetail ? ` ${fmtErrorDetail(s.syncDetail)}` : ''}
           </div>
         )}
         <div className="run-card">
