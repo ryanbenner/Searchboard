@@ -1,28 +1,27 @@
 import type { JobRow } from '../../shared/types'
 
-export type SortMode = 'rank-recent' | 'rank' | 'recent' | 'location'
+export type SortMode = 'rank-recent' | 'recent' | 'rank' | 'location'
 
 export const SORT_LABELS: Record<SortMode, string> = {
-  'rank-recent': 'Ranked + recent',
-  rank: 'Top ranked',
+  'rank-recent': 'Newest + ranked',
   recent: 'Newest',
+  rank: 'Top ranked',
   location: 'Location',
 }
 
-const ageDays = (iso: string): number =>
-  Math.max(0, Math.floor((Date.now() - new Date(iso + 'T00:00:00Z').getTime()) / 864e5))
-
-// score fades by 2 points per day of age, so fresh decent matches beat stale great ones
-const blend = (j: JobRow): number => (j.score ?? 0) - 2 * ageDays(j.firstSeen)
+// "posted" is what the job board says; fall back to when we first scraped it
+const posted = (j: JobRow): string => j.postedAt ?? j.firstSeen
 
 type Cmp = (a: JobRow, b: JobRow) => number
 const byScore: Cmp = (a, b) => (b.score ?? -1) - (a.score ?? -1)
-const byRecent: Cmp = (a, b) => b.firstSeen.localeCompare(a.firstSeen)
+const byPosted: Cmp = (a, b) => posted(b).localeCompare(posted(a))
+const byFirstSeen: Cmp = (a, b) => b.firstSeen.localeCompare(a.firstSeen)
+const byTitle: Cmp = (a, b) => a.title.localeCompare(b.title)
 
 const COMPARATORS: Record<SortMode, Cmp> = {
-  rank: (a, b) => byScore(a, b) || byRecent(a, b),
-  recent: (a, b) => byRecent(a, b) || byScore(a, b),
-  'rank-recent': (a, b) => blend(b) - blend(a) || byRecent(a, b),
+  'rank-recent': (a, b) => byPosted(a, b) || byScore(a, b),
+  recent: (a, b) => byPosted(a, b) || byFirstSeen(a, b) || byTitle(a, b),
+  rank: (a, b) => byScore(a, b) || byPosted(a, b),
   location: (a, b) => {
     if (a.location == null && b.location == null) return byScore(a, b)
     if (a.location == null) return 1

@@ -16,8 +16,9 @@ function seed(rows: Array<Partial<Record<string, unknown>> & { id: string }>): s
     posted_at DATE, rationale TEXT)`)
   const ins = c.prepare(`INSERT INTO seen (id, company, title, url, first_seen, last_seen, ranked_score)
     VALUES (@id, @company, @title, @url, @first_seen, @last_seen, @score)`)
+  const today = new Date().toISOString().slice(0, 10)
   for (const r of rows)
-    ins.run({ company: 'C', title: 'T', url: 'u', first_seen: '2026-08-01', last_seen: '2026-08-27', score: 70, ...r })
+    ins.run({ company: 'C', title: 'T', url: 'u', first_seen: today, last_seen: today, score: 70, ...r })
   c.close()
   return p
 }
@@ -53,4 +54,21 @@ test('notes update leaves status untouched', () => {
   const j = db.listJobs()[0]
   expect(j.notes).toBe('call back friday')
   expect(j.status).toBe('New')
+})
+
+test('untouched jobs older than 3 weeks age out; acted-on jobs stay', () => {
+  const day = (n: number): string => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10)
+  const p = seed([
+    { id: 'old:untouched', first_seen: day(30) },
+    { id: 'old:applied', first_seen: day(30) },
+    { id: 'old:seen:fresh:post', first_seen: day(30) },
+    { id: 'fresh', first_seen: day(2) },
+  ])
+  const c = new Database(p)
+  c.prepare(`UPDATE seen SET posted_at=? WHERE id='old:seen:fresh:post'`).run(day(3))
+  c.close()
+  const db = new Db(p)
+  db.updateJob('old:applied', { status: 'Applied' })
+  expect(db.listJobs().map((j) => j.id).sort()).toEqual(['fresh', 'old:applied', 'old:seen:fresh:post'])
+  expect(db.counts().Total).toBe(3)
 })
