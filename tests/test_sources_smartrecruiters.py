@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 import respx, httpx
-from jobscraper.sources.smartrecruiters import SmartRecruiters
+from searchboard.sources.smartrecruiters import SmartRecruiters
 
 
 FIX = Path(__file__).parent / "fixtures"

@@ -1,8 +1,8 @@
 from __future__ import annotations
 import re
 from datetime import date
-from jobscraper.config import Companies, CompanyEntry
-from jobscraper.job import Job
+from searchboard.config import Companies, CompanyEntry
+from searchboard.job import Job
 
 _PATTERNS = {
     "greenhouse":      re.compile(r"boards\.greenhouse\.io/([a-z0-9][a-z0-9-]*)", re.I),

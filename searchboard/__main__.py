@@ -1,4 +1,4 @@
-from jobscraper.cli import main
+from searchboard.cli import main
 
 if __name__ == "__main__":
     main()

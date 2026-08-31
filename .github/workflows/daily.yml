@@ -11,7 +11,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     env:
-      DATA_REPO: ryanbenner/JobScraper-data
+      DATA_REPO: ryanbenner/Searchboard-data
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -41,7 +41,7 @@ jobs:
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           EMAIL_TO:  ${{ secrets.EMAIL_TO }}
-        run: uv run python -m jobscraper run
+        run: uv run python -m searchboard run
 
       - name: Push data to private repo
         env:

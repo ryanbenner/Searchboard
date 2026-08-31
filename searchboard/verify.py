@@ -2,7 +2,7 @@ from __future__ import annotations
 import asyncio
 import re
 import httpx
-from jobscraper.job import Job
+from searchboard.job import Job
 
 
 _HEADERS = {

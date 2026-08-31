@@ -3,7 +3,7 @@ from pathlib import Path
 from openpyxl import Workbook
 from openpyxl.formatting.rule import ColorScaleRule
 from openpyxl.utils import get_column_letter
-from jobscraper.job import Job
+from searchboard.job import Job
 
 
 _HEADERS = ["Score", "Company", "Title", "Location", "Remote",
@@ -49,7 +49,7 @@ def render_markdown(jobs: list[Job], *, top_n: int = 15) -> str:
     ranked = sorted(jobs, key=lambda x: (x.score is None, -(x.score or 0)))[:top_n]
     if not ranked:
         return "_No new jobs today._"
-    lines = ["# JobScraper — top jobs today", ""]
+    lines = ["# Searchboard — top jobs today", ""]
     for j in ranked:
         salary = ""
         if j.salary_min and j.salary_max:

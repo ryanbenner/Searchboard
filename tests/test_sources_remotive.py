@@ -1,6 +1,6 @@
 import json, respx, httpx
 from pathlib import Path
-from jobscraper.sources.remotive import Remotive
+from searchboard.sources.remotive import Remotive
 
 FIX = Path(__file__).parent / "fixtures" / "remotive.json"
 

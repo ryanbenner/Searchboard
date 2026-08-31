@@ -1,12 +1,19 @@
 from __future__ import annotations
 import json
 import os
+import sys
 from typing import Any
-from jobscraper.config import Profile
-from jobscraper.job import Job
+from searchboard.config import Profile
+from searchboard.job import Job
 
 MODEL = "claude-haiku-4-5"
 BATCH_SIZE = 40
+
+# haiku 4.5 usd per million tokens
+IN_USD_PER_MTOK = 1.0
+OUT_USD_PER_MTOK = 5.0
+CACHE_WRITE_MULT = 1.25
+CACHE_READ_MULT = 0.10
 
 _TOOL = {
     "name": "submit_rankings",
@@ -78,6 +85,7 @@ def rank_jobs(jobs: list[Job], profile: Profile, client=None) -> list[Job]:
     }]
 
     rankings: dict[str, dict] = {}
+    in_tok = out_tok = cache_w = cache_r = 0
     for i in range(0, len(jobs), BATCH_SIZE):
         batch = jobs[i:i + BATCH_SIZE]
         user_payload = json.dumps([_job_to_payload(j) for j in batch], ensure_ascii=False)
@@ -94,6 +102,16 @@ def rank_jobs(jobs: list[Job], profile: Profile, client=None) -> list[Job]:
             if getattr(block, "type", None) == "tool_use":
                 for r in block.input.get("rankings", []):
                     rankings[r["id"]] = r
+        u = msg.usage
+        in_tok += u.input_tokens
+        out_tok += u.output_tokens
+        cache_w += getattr(u, "cache_creation_input_tokens", 0) or 0
+        cache_r += getattr(u, "cache_read_input_tokens", 0) or 0
+
+    cost = ((in_tok + CACHE_WRITE_MULT * cache_w + CACHE_READ_MULT * cache_r)
+            * IN_USD_PER_MTOK + out_tok * OUT_USD_PER_MTOK) / 1e6
+    print(f"rank_cost=${cost:.4f} (input_tokens={in_tok} output_tokens={out_tok} "
+          f"cache_write={cache_w} cache_read={cache_r})", file=sys.stderr)
 
     out: list[Job] = []
     for j in jobs:

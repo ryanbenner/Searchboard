@@ -1,7 +1,7 @@
 from datetime import date
-from jobscraper.config import load_profile
-from jobscraper.filter import hard_filter
-from jobscraper.job import Job
+from searchboard.config import load_profile
+from searchboard.filter import hard_filter
+from searchboard.job import Job
 from pathlib import Path
 
 

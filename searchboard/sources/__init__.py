@@ -1,5 +1,5 @@
 from typing import Type
-from jobscraper.sources.base import Source
+from searchboard.sources.base import Source
 
 REGISTRY: dict[str, Type[Source]] = {}
 

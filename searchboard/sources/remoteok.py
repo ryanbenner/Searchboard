@@ -1,9 +1,9 @@
 from datetime import date, datetime
 import re
 import httpx
-from jobscraper.job import Job, make_id
-from jobscraper.sources import register
-from jobscraper.sources.base import Source
+from searchboard.job import Job, make_id
+from searchboard.sources import register
+from searchboard.sources.base import Source
 
 _HTML = re.compile(r"<[^>]+>")
 
@@ -15,7 +15,7 @@ def _slugify(s: str) -> str:
 @register("remoteok")
 class RemoteOK(Source):
     URL = "https://remoteok.com/api"
-    UA = "JobScraper/0.2 (+https://github.com/ryanbenner/JobScraper)"
+    UA = "Searchboard/0.2 (+https://github.com/ryanbenner/Searchboard)"
 
     def __init__(self, timeout: float = 20.0):
         self.timeout = timeout

@@ -1,7 +1,7 @@
 from datetime import date
 from openpyxl import load_workbook
-from jobscraper.digest import write_xlsx, render_markdown
-from jobscraper.job import Job
+from searchboard.digest import write_xlsx, render_markdown
+from searchboard.job import Job
 
 
 def _j(jid, title, score):

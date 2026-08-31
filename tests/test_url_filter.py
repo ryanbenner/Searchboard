@@ -1,4 +1,4 @@
-from jobscraper.url_filter import looks_like_job_url
+from searchboard.url_filter import looks_like_job_url
 
 
 def test_greenhouse_host_passes():

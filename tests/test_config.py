@@ -1,5 +1,5 @@
 from pathlib import Path
-from jobscraper.config import load_profile, load_companies, save_companies, CompanyEntry
+from searchboard.config import load_profile, load_companies, save_companies, CompanyEntry
 
 
 FIX = Path(__file__).parent / "fixtures"

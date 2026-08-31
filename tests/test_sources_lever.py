@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 import respx, httpx
-from jobscraper.sources.lever import Lever
+from searchboard.sources.lever import Lever
 
 
 FIX = Path(__file__).parent / "fixtures" / "lever_notion.json"

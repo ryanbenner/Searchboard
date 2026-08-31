@@ -3,8 +3,8 @@ from datetime import date
 from pathlib import Path
 from unittest.mock import MagicMock
 from openpyxl import load_workbook
-from jobscraper import cli
-from jobscraper.job import Job
+from searchboard import cli
+from searchboard.job import Job
 
 
 def _j(jid, title="Junior Software Engineer", score=None):
@@ -85,3 +85,66 @@ def test_cli_skips_email_when_no_unsent_jobs(tmp_path, monkeypatch):
 
     cli.main(["run"])
     assert called == [], "should not send email when no eligible jobs"
+
+
+from searchboard.cli import build_parser
+
+
+def test_run_flag_defaults():
+    args = build_parser().parse_args(["run"])
+    assert args.no_email is False
+    assert args.profile == "profile.yml"
+    assert args.data_dir == "data"
+
+
+def test_run_flags_parse():
+    args = build_parser().parse_args(
+        ["run", "--no-email", "--profile", "/d/profile.yml", "--data-dir", "/d"])
+    assert args.no_email is True
+    assert args.profile == "/d/profile.yml"
+    assert args.data_dir == "/d"
+
+
+def _spy_run(tmp_path, monkeypatch, rank_calls):
+    shutil.copy(Path(__file__).parent / "fixtures" / "profile_min.yml", tmp_path / "profile.yml")
+    shutil.copy(Path(__file__).parent / "fixtures" / "companies_min.yml", tmp_path / "companies.yml")
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "data").mkdir(exist_ok=True)
+
+    fake_src = MagicMock()
+    fake_src.fetch.return_value = [_j("greenhouse:anthropic:1"), _j("greenhouse:anthropic:2")]
+    monkeypatch.setattr(cli, "build_sources", lambda profile, companies: [fake_src])
+    monkeypatch.setattr(cli, "verify_links", lambda jobs, **kw: jobs)
+
+    def fake_rank(jobs, profile, client=None):
+        rank_calls.append([j.id for j in jobs])
+        for j in jobs:
+            j.score = 90
+            j.rationale = "great match"
+        return jobs
+    monkeypatch.setattr(cli, "rank_jobs", fake_rank)
+
+
+def test_second_run_skips_already_ranked_jobs(tmp_path, monkeypatch):
+    rank_calls = []
+    _spy_run(tmp_path, monkeypatch, rank_calls)
+    cli.main(["run", "--no-email"])
+    cli.main(["run", "--no-email"])
+    assert rank_calls[0] == ["greenhouse:anthropic:1", "greenhouse:anthropic:2"]
+    assert rank_calls[1] == []
+    # reused scores still land in the store on the second run
+    from searchboard.store import Store
+    row = Store(tmp_path / "data" / "seen.sqlite")._conn.execute(
+        "SELECT ranked_score, rationale FROM seen WHERE id='greenhouse:anthropic:1'").fetchone()
+    assert row["ranked_score"] == 90
+    assert row["rationale"] == "great match"
+
+
+def test_profile_change_triggers_full_rerank(tmp_path, monkeypatch):
+    rank_calls = []
+    _spy_run(tmp_path, monkeypatch, rank_calls)
+    cli.main(["run", "--no-email"])
+    with open(tmp_path / "profile.yml", "a") as f:
+        f.write("# tweaked\n")
+    cli.main(["run", "--no-email"])
+    assert rank_calls[1] == ["greenhouse:anthropic:1", "greenhouse:anthropic:2"]

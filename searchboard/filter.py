@@ -1,7 +1,7 @@
 from __future__ import annotations
 import re
-from jobscraper.config import Profile
-from jobscraper.job import Job
+from searchboard.config import Profile
+from searchboard.job import Job
 
 
 _US_TOKEN_RE = re.compile(

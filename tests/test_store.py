@@ -1,6 +1,6 @@
 from datetime import date, timedelta
-from jobscraper.job import Job
-from jobscraper.store import Store
+from searchboard.job import Job
+from searchboard.store import Store
 
 
 def _j(jid: str, score: int = 50) -> Job:
@@ -111,3 +111,64 @@ def test_sent_at_column_migration_idempotent(tmp_path):
     Store(p)            # creates schema + adds sent_at
     Store(p)            # re-opens, should not error
     Store(p)            # third time for good measure
+
+
+def test_upsert_writes_detail_columns(tmp_path):
+    s = Store(tmp_path / "seen.sqlite")
+    j = _j("greenhouse:a:1")
+    j.location = "Remote · US"
+    j.salary_min = 120000
+    j.salary_max = 150000
+    j.posted_at = date.today()
+    s.upsert([j])
+    r = s._conn.execute("SELECT * FROM seen WHERE id=?", (j.id,)).fetchone()
+    assert r["source"] == "greenhouse"
+    assert r["location"] == "Remote · US"
+    assert r["salary_min"] == 120000
+    assert r["salary_max"] == 150000
+    assert r["posted_at"] == date.today().isoformat()
+    assert r["rationale"] == "ok"
+
+
+def test_detail_columns_update_on_reupsert(tmp_path):
+    s = Store(tmp_path / "seen.sqlite")
+    s.upsert([_j("greenhouse:a:1")])
+    j2 = _j("greenhouse:a:1")
+    j2.location = "NYC"
+    s.upsert([j2])
+    r = s._conn.execute("SELECT location FROM seen WHERE id=?", (j2.id,)).fetchone()
+    assert r["location"] == "NYC"
+
+
+def test_migration_adds_columns_to_legacy_db(tmp_path):
+    import sqlite3
+    p = tmp_path / "seen.sqlite"
+    conn = sqlite3.connect(p)
+    conn.execute("""CREATE TABLE seen (
+        id TEXT PRIMARY KEY, company TEXT, title TEXT, url TEXT,
+        first_seen DATE NOT NULL, last_seen DATE NOT NULL,
+        ranked_score INTEGER, applied INTEGER NOT NULL DEFAULT 0, notes TEXT)""")
+    conn.execute("INSERT INTO seen VALUES ('x:y:1','C','T','u','2026-01-01','2026-01-01',50,0,'')")
+    conn.commit(); conn.close()
+    s = Store(p)  # must not raise; must add missing columns
+    r = s._conn.execute("SELECT source, location, sent_at FROM seen WHERE id='x:y:1'").fetchone()
+    assert r["source"] is None and r["location"] is None
+
+
+def test_meta_round_trips_and_persists(tmp_path):
+    s = Store(tmp_path / "seen.sqlite")
+    assert s.get_meta("profile_hash") is None
+    s.set_meta("profile_hash", "abc")
+    assert s.get_meta("profile_hash") == "abc"
+    s.set_meta("profile_hash", "def")
+    assert Store(tmp_path / "seen.sqlite").get_meta("profile_hash") == "def"
+
+
+def test_scores_returns_only_ranked_rows(tmp_path):
+    s = Store(tmp_path / "seen.sqlite")
+    s.upsert([_j("g:a:1", score=80)])
+    s._conn.execute(
+        "INSERT INTO seen(id, first_seen, last_seen) VALUES ('g:a:2','2026-01-01','2026-01-01')")
+    got = s.scores()
+    assert got["g:a:1"] == (80, "ok")
+    assert "g:a:2" not in got

@@ -1,10 +1,10 @@
 from datetime import date, datetime, timezone
 import re
 import httpx
-from jobscraper.job import Job, make_id
-from jobscraper.sources import register
-from jobscraper.sources.base import Source
-from jobscraper.url_filter import looks_like_job_url
+from searchboard.job import Job, make_id
+from searchboard.sources import register
+from searchboard.sources.base import Source
+from searchboard.url_filter import looks_like_job_url
 
 
 _HTML = re.compile(r"<[^>]+>")

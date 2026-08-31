@@ -1,6 +1,6 @@
 import json, respx, httpx
 from pathlib import Path
-from jobscraper.sources.hn_whoshiring import HNWhosHiring
+from searchboard.sources.hn_whoshiring import HNWhosHiring
 
 FIX = Path(__file__).parent / "fixtures"
 

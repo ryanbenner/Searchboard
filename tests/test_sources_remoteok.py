@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 import respx, httpx
-from jobscraper.sources.remoteok import RemoteOK
+from searchboard.sources.remoteok import RemoteOK
 
 
 FIX = Path(__file__).parent / "fixtures" / "remoteok.json"

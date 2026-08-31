@@ -1,28 +1,28 @@
 from __future__ import annotations
 import argparse
+import hashlib
 import os
 import sys
 from datetime import date
 from pathlib import Path
-from jobscraper.config import load_profile, load_companies, save_companies, Profile, Companies
-from jobscraper.discover import discover_new_slugs, merge_into_companies
-from jobscraper.digest import write_xlsx, render_markdown
-from jobscraper.email import send_digest
-from jobscraper.filter import hard_filter
-from jobscraper.rank import rank_jobs
-from jobscraper.verify import verify_links
-from jobscraper.sources.greenhouse import Greenhouse
-from jobscraper.sources.lever import Lever
-from jobscraper.sources.ashby import Ashby
-from jobscraper.sources.smartrecruiters import SmartRecruiters
-from jobscraper.sources.remoteok import RemoteOK
-from jobscraper.sources.remotive import Remotive
-from jobscraper.sources.weworkremotely import WeWorkRemotely
-from jobscraper.sources.hn_whoshiring import HNWhosHiring
-from jobscraper.store import Store
+from searchboard.config import load_profile, load_companies, save_companies, Profile, Companies
+from searchboard.discover import discover_new_slugs, merge_into_companies
+from searchboard.digest import write_xlsx, render_markdown
+from searchboard.email import send_digest
+from searchboard.filter import hard_filter
+from searchboard.rank import rank_jobs
+from searchboard.verify import verify_links
+from searchboard.sources.greenhouse import Greenhouse
+from searchboard.sources.lever import Lever
+from searchboard.sources.ashby import Ashby
+from searchboard.sources.smartrecruiters import SmartRecruiters
+from searchboard.sources.remoteok import RemoteOK
+from searchboard.sources.remotive import Remotive
+from searchboard.sources.weworkremotely import WeWorkRemotely
+from searchboard.sources.hn_whoshiring import HNWhosHiring
+from searchboard.store import Store
 
 
-DATA_DIR = Path("data")
 SCORE_FLOOR = 50
 TOP_N = 100
 DIGEST_LIMIT = 15
@@ -47,11 +47,12 @@ def build_sources(profile: Profile, companies: Companies):
     ]
 
 
-def cmd_run(_args) -> int:
-    profile = load_profile("profile.yml")
+def cmd_run(args) -> int:
+    profile = load_profile(args.profile)
     companies = load_companies("companies.yml")
 
-    DATA_DIR.mkdir(exist_ok=True)
+    data_dir = Path(args.data_dir)
+    data_dir.mkdir(exist_ok=True)
     today = date.today()
 
     raw: list = []
@@ -73,9 +74,21 @@ def cmd_run(_args) -> int:
     print(f"verified={len(verified)} (dropped {len(filtered) - len(verified)} dead links)",
           file=sys.stderr)
 
-    ranked = rank_jobs(verified, profile)
+    store = Store(data_dir / "seen.sqlite")
 
-    store = Store(DATA_DIR / "seen.sqlite")
+    # only send unscored jobs to the API; a profile edit re-ranks everything
+    profile_hash = hashlib.sha256(Path(args.profile).read_bytes()).hexdigest()
+    known = {} if store.get_meta("profile_hash") != profile_hash else store.scores()
+    to_rank = [j for j in verified if j.id not in known]
+    rank_jobs(to_rank, profile)
+    for j in verified:
+        if j.id in known:
+            j.score, j.rationale = known[j.id]
+    store.set_meta("profile_hash", profile_hash)
+    ranked = verified
+    print(f"scored_new={len(to_rank)} reused={len(verified) - len(to_rank)}",
+          file=sys.stderr)
+
     store.upsert(ranked, today=today)
 
     digest_jobs = store.unsent_top(today, score_floor=SCORE_FLOOR,
@@ -91,11 +104,15 @@ def cmd_run(_args) -> int:
     print(f"ranked={len(ranked)} digest={len(digest_full)} "
           f"all_top={len(all_ranked_top)}", file=sys.stderr)
 
-    snap = DATA_DIR / f"{today.isoformat()}.xlsx"
+    snap = data_dir / f"{today.isoformat()}.xlsx"
     write_xlsx(snap, new_today=digest_full, still_open=still_open_full,
                all_ranked=all_ranked_top)
-    latest = DATA_DIR / "latest.xlsx"
+    latest = data_dir / "latest.xlsx"
     latest.write_bytes(snap.read_bytes())
+
+    if args.no_email:
+        print("--no-email: skipping digest email", file=sys.stderr)
+        return 0
 
     if not digest_full:
         print("no unsent jobs above floor; skipping email", file=sys.stderr)
@@ -108,7 +125,7 @@ def cmd_run(_args) -> int:
         user=os.environ["SMTP_USER"],
         password=os.environ["SMTP_PASS"],
         to=os.environ["EMAIL_TO"],
-        subject=f"JobScraper {today.isoformat()} — {len(digest_full)} new",
+        subject=f"Searchboard {today.isoformat()} — {len(digest_full)} new",
         markdown_body=md,
         xlsx_path=latest,
     )
@@ -116,11 +133,21 @@ def cmd_run(_args) -> int:
     return 0
 
 
-def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(prog="jobscraper")
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(prog="searchboard")
     sub = p.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("run", help="Run the daily pipeline.")
-    args = p.parse_args(argv)
+    run = sub.add_parser("run", help="Run the daily pipeline.")
+    run.add_argument("--no-email", action="store_true",
+                     help="Skip digest email and mark_sent.")
+    run.add_argument("--profile", default="profile.yml",
+                     help="Path to profile.yml.")
+    run.add_argument("--data-dir", default="data",
+                     help="Directory for seen.sqlite and xlsx output.")
+    return p
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
     if args.cmd == "run":
         return cmd_run(args)
     return 1

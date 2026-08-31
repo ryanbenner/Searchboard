@@ -1,9 +1,9 @@
 from datetime import date, datetime
 import re
 import httpx
-from jobscraper.job import Job, make_id
-from jobscraper.sources import register
-from jobscraper.sources.base import Source
+from searchboard.job import Job, make_id
+from searchboard.sources import register
+from searchboard.sources.base import Source
 
 _HTML = re.compile(r"<[^>]+>")
 _SALARY = re.compile(r"\$(\d{2,3}(?:,\d{3})?)\s*[–-]\s*\$(\d{2,3}(?:,\d{3})?)")

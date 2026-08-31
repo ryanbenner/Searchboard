@@ -1,5 +1,5 @@
 from datetime import date
-from jobscraper.job import Job, make_id
+from searchboard.job import Job, make_id
 
 
 def test_make_id_format():

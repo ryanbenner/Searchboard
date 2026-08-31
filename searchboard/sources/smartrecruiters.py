@@ -1,9 +1,9 @@
 from __future__ import annotations
 from datetime import date, datetime
 import httpx
-from jobscraper.job import Job, make_id
-from jobscraper.sources import register
-from jobscraper.sources.base import Source
+from searchboard.job import Job, make_id
+from searchboard.sources import register
+from searchboard.sources.base import Source
 
 
 @register("smartrecruiters")

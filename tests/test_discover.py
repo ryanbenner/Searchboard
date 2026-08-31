@@ -1,7 +1,7 @@
 from datetime import date
-from jobscraper.config import Companies, CompanyEntry
-from jobscraper.discover import discover_new_slugs
-from jobscraper.job import Job
+from searchboard.config import Companies, CompanyEntry
+from searchboard.discover import discover_new_slugs
+from searchboard.job import Job
 
 
 def _job(desc: str = "", url: str = "https://example.com") -> Job:

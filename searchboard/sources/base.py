@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from jobscraper.job import Job
+from searchboard.job import Job
 
 
 class Source(ABC):

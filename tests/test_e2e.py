@@ -10,7 +10,7 @@ from pathlib import Path
 from unittest.mock import MagicMock
 import respx, httpx
 from openpyxl import load_workbook
-from jobscraper import cli
+from searchboard import cli
 
 
 FIX = Path(__file__).parent / "fixtures"

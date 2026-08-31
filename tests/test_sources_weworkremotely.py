@@ -1,6 +1,6 @@
 from pathlib import Path
 import respx, httpx
-from jobscraper.sources.weworkremotely import WeWorkRemotely
+from searchboard.sources.weworkremotely import WeWorkRemotely
 
 FIX = Path(__file__).parent / "fixtures" / "wwr_programming.xml"
 

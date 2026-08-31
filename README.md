@@ -1,4 +1,4 @@
-# JobScraper
+# Searchboard
 
 Daily job-search pipeline. Pulls listings from sustainable APIs
 (Greenhouse, Lever, Ashby, RemoteOK, Remotive, We Work Remotely, HN
@@ -9,7 +9,7 @@ to rank survivors, and emails the operator a daily digest of new matches.
 
 ## How it runs
 
-`.github/workflows/daily.yml` triggers `python -m jobscraper run` at
+`.github/workflows/daily.yml` triggers `python -m searchboard run` at
 14:00 UTC daily (7am PT). Each run:
 
 - Clones a **separate private** data repo and restores `profile.yml` +
@@ -30,7 +30,7 @@ private data repo. This public repo contains code and seed config only.
 
 ### 1. Create a private data repo
 
-Create an empty private repo (suggested name: `<your-username>/JobScraper-data`).
+Create an empty private repo (suggested name: `<your-username>/Searchboard-data`).
 This will hold your `profile.yml`, daily xlsx snapshots, and the cumulative
 `seen.sqlite` log. Nothing here is published.
 
@@ -39,7 +39,7 @@ This will hold your `profile.yml`, daily xlsx snapshots, and the cumulative
 At <https://github.com/settings/personal-access-tokens/new>:
 
 - **Resource owner:** your account
-- **Repository access:** Only select repositories → your `JobScraper-data`
+- **Repository access:** Only select repositories → your `Searchboard-data`
 - **Permissions:** Contents → Read and write
 
 Copy the generated token.
@@ -50,7 +50,7 @@ The pipeline sends mail via your Gmail. You need an **app password**
 (not your real Google password):
 
 1. Visit <https://myaccount.google.com/security> → enable 2-Step Verification.
-2. Visit <https://myaccount.google.com/apppasswords> → create one named "JobScraper".
+2. Visit <https://myaccount.google.com/apppasswords> → create one named "Searchboard".
 3. Copy the 16-character password — you'll use it as `SMTP_PASS`.
 
 ### 4. Anthropic API key
@@ -77,9 +77,9 @@ your private data repo:
 ```bash
 cp profile.example.yml profile.yml
 # edit profile.yml with your details
-cd /tmp && git clone https://github.com/<you>/JobScraper-data.git
-cp <repo-path>/profile.yml /tmp/JobScraper-data/
-cd /tmp/JobScraper-data
+cd /tmp && git clone https://github.com/<you>/Searchboard-data.git
+cp <repo-path>/profile.yml /tmp/Searchboard-data/
+cd /tmp/Searchboard-data
 git add profile.yml
 git commit -m "seed profile"
 git push
@@ -87,7 +87,7 @@ git push
 
 ### 7. Update the workflow with your data-repo URL
 
-In `.github/workflows/daily.yml`, replace `<owner>/JobScraper-data`
+In `.github/workflows/daily.yml`, replace `<owner>/Searchboard-data`
 with your data repo path.
 
 ### 8. Trigger a manual run to verify
@@ -98,7 +98,7 @@ gh run watch
 ```
 
 When it finishes you should have an email in your inbox and new
-contents in your `JobScraper-data` private repo.
+contents in your `Searchboard-data` private repo.
 
 ## Local development
 
@@ -114,7 +114,7 @@ To run the pipeline locally:
 ANTHROPIC_API_KEY=... \
 SMTP_HOST=smtp.gmail.com SMTP_PORT=587 \
 SMTP_USER=... SMTP_PASS=... EMAIL_TO=... \
-uv run python -m jobscraper run
+uv run python -m searchboard run
 ```
 
 ## Editing your profile

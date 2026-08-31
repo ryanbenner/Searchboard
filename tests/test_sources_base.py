@@ -1,7 +1,7 @@
 from datetime import date
-from jobscraper.sources.base import Source
-from jobscraper.sources import REGISTRY, register
-from jobscraper.job import Job
+from searchboard.sources.base import Source
+from searchboard.sources import REGISTRY, register
+from searchboard.job import Job
 
 
 @register("dummy")

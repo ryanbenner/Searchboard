@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 import respx, httpx
-from jobscraper.sources.ashby import Ashby
+from searchboard.sources.ashby import Ashby
 
 
 FIX = Path(__file__).parent / "fixtures" / "ashby_linear.json"

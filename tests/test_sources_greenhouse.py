@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 import respx, httpx
-from jobscraper.sources.greenhouse import Greenhouse
+from searchboard.sources.greenhouse import Greenhouse
 
 
 FIX = Path(__file__).parent / "fixtures" / "greenhouse_anthropic.json"

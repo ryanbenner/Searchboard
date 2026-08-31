@@ -1,8 +1,8 @@
 from datetime import date
 import httpx
 import respx
-from jobscraper.job import Job
-from jobscraper.verify import verify_links
+from searchboard.job import Job
+from searchboard.verify import verify_links
 
 
 def _j(jid, url, source="x"):
