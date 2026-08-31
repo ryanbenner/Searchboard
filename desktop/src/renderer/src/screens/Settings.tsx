@@ -100,7 +100,7 @@ export function Settings(): React.JSX.Element {
             <button className="btn btn-primary" onClick={() => void save()}>
               Save
             </button>
-            {saved && issues.length === 0 && <span className="text-muted" style={{ fontSize: 12.5 }}>Saved — all checks pass.</span>}
+            {saved && issues.length === 0 && <span className="text-muted" style={{ fontSize: 13.5 }}>Saved — all checks pass.</span>}
           </div>
           {error && <div className="banner banner-error">{error}</div>}
           {issues

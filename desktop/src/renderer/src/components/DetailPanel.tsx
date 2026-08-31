@@ -44,7 +44,7 @@ export function DetailPanel(): React.JSX.Element | null {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="kicker">{job.source ?? 'scraped'}</div>
             <h5>{job.title}</h5>
-            <div className="text-muted" style={{ fontSize: 13, marginTop: 2.8 }}>
+            <div className="text-muted" style={{ fontSize: 14, marginTop: 2.8 }}>
               {job.company}
               {job.location ? ` · ${job.location}` : ''}
             </div>
@@ -57,19 +57,19 @@ export function DetailPanel(): React.JSX.Element | null {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8.4 }}>
           <div className="tile">
             <div className="tile-label">Salary</div>
-            <div style={{ fontSize: 13.5, marginTop: 2.8 }}>{fmtSalary(job.salaryMin, job.salaryMax)}</div>
+            <div style={{ fontSize: 14.5, marginTop: 2.8 }}>{fmtSalary(job.salaryMin, job.salaryMax)}</div>
           </div>
           <div className="tile">
             <div className="tile-label">Posted</div>
-            <div style={{ fontSize: 13.5, marginTop: 2.8 }}>{fmtAgo(job.postedAt ?? job.firstSeen)}</div>
+            <div style={{ fontSize: 14.5, marginTop: 2.8 }}>{fmtAgo(job.postedAt ?? job.firstSeen)}</div>
           </div>
           <div className="tile">
             <div className="tile-label">Score</div>
-            <div style={{ fontSize: 13.5, marginTop: 2.8 }}>{job.score ?? '—'}</div>
+            <div style={{ fontSize: 14.5, marginTop: 2.8 }}>{job.score ?? '—'}</div>
           </div>
           <div className="tile">
             <div className="tile-label">Emailed</div>
-            <div style={{ fontSize: 13.5, marginTop: 2.8 }}>{job.sentAt ? fmtAgo(job.sentAt) : 'not yet'}</div>
+            <div style={{ fontSize: 14.5, marginTop: 2.8 }}>{job.sentAt ? fmtAgo(job.sentAt) : 'not yet'}</div>
           </div>
         </div>
 
@@ -88,7 +88,7 @@ export function DetailPanel(): React.JSX.Element | null {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8.4 }}>
           {timeline.map(([label, when]) => (
-            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8.4, fontSize: 12.5 }}>
+            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8.4, fontSize: 13.5 }}>
               <span className="dot" />
               <span>{label}</span>
               <span className="text-muted" style={{ marginLeft: 'auto' }}>
@@ -99,7 +99,7 @@ export function DetailPanel(): React.JSX.Element | null {
         </div>
 
         {job.rationale && (
-          <p className="text-muted" style={{ fontSize: 12.5, lineHeight: 1.6 }}>
+          <p className="text-muted" style={{ fontSize: 13.5, lineHeight: 1.6 }}>
             {job.rationale}
           </p>
         )}

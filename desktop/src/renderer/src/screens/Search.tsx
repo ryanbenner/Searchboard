@@ -71,7 +71,7 @@ export function Search(): React.JSX.Element {
         <div>
           <div className="kicker">Configuration</div>
           <h3>Search criteria</h3>
-          <p className="text-muted" style={{ fontSize: 13, marginTop: 5.6 }}>
+          <p className="text-muted" style={{ fontSize: 14, marginTop: 5.6 }}>
             Saved to profile.yml in the data repo — the daily workflow reads the same file.
           </p>
         </div>
@@ -110,7 +110,7 @@ export function Search(): React.JSX.Element {
                 </span>
               ))}
             </div>
-            <span className="text-muted" style={{ fontSize: 12 }}>
+            <span className="text-muted" style={{ fontSize: 13 }}>
               All sources run every time; toggles may come later.
             </span>
           </section>

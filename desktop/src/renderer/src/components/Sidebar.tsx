@@ -39,13 +39,13 @@ export function Sidebar(): React.JSX.Element {
         )}
         <div className="run-card">
           <div
-            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, letterSpacing: '.08em', textTransform: 'uppercase' }}
             className="text-muted"
           >
             <span className={'run-dot' + (s.running ? ' running' : '')} />
             {s.running ? 'Running' : 'Idle'}
           </div>
-          <div className="text-muted" style={{ fontSize: 12 }}>
+          <div className="text-muted" style={{ fontSize: 13 }}>
             {s.running ? 'pipeline · in progress' : s.lastRun ? `last run ${new Date(s.lastRun.startedAt).toLocaleString()}` : 'no runs yet'}
           </div>
           <button className="btn btn-primary btn-block" disabled={s.running || !s.settingsOk} onClick={() => void s.startRun()}>

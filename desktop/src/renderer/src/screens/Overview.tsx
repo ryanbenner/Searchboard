@@ -28,7 +28,7 @@ export function Overview(): React.JSX.Element {
       <div className="card-kicker">{label}</div>
       <div className="stat-value">{value}</div>
       {note && (
-        <div className="text-muted" style={{ fontSize: 12 }}>
+        <div className="text-muted" style={{ fontSize: 13 }}>
           {note}
         </div>
       )}
@@ -41,7 +41,7 @@ export function Overview(): React.JSX.Element {
         <div>
           <div className="kicker">Overview</div>
           <h3>{greeting}</h3>
-          <p className="text-muted" style={{ fontSize: 13, marginTop: 5.6 }}>
+          <p className="text-muted" style={{ fontSize: 14, marginTop: 5.6 }}>
             {s.lastRun ? `Last run found ${s.lastRun.added ?? '?'} new roles.` : 'No runs recorded on this machine yet.'}
           </p>
         </div>
@@ -59,7 +59,7 @@ export function Overview(): React.JSX.Element {
               <div className="card-kicker">Pipeline</div>
               {STATUSES.map((st) => (
                 <div className="funnel-row" key={st}>
-                  <span style={{ fontSize: 12.5 }}>{st}</span>
+                  <span style={{ fontSize: 13.5 }}>{st}</span>
                   <span className="funnel-track">
                     <span
                       className="funnel-bar"
@@ -69,7 +69,7 @@ export function Overview(): React.JSX.Element {
                       }}
                     />
                   </span>
-                  <span style={{ fontSize: 12, fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>{counts[st] ?? 0}</span>
+                  <span style={{ fontSize: 13, fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>{counts[st] ?? 0}</span>
                 </div>
               ))}
             </section>
@@ -85,21 +85,21 @@ export function Overview(): React.JSX.Element {
                   }}
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13.5, fontFamily: 'var(--font-heading)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ fontSize: 14.5, fontFamily: 'var(--font-heading)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {j.title}
                     </div>
-                    <div className="text-muted" style={{ fontSize: 12 }}>
+                    <div className="text-muted" style={{ fontSize: 13 }}>
                       {j.company}
                       {j.location ? ` · ${j.location}` : ''}
                     </div>
                   </div>
-                  <span className="text-muted" style={{ fontSize: 11.5, flex: 'none' }}>
+                  <span className="text-muted" style={{ fontSize: 12.5, flex: 'none' }}>
                     {fmtAgo(j.firstSeen)}
                   </span>
                 </button>
               ))}
               {latest.length === 0 && (
-                <span className="text-muted" style={{ fontSize: 12.5 }}>
+                <span className="text-muted" style={{ fontSize: 13.5 }}>
                   Nothing scraped yet.
                 </span>
               )}

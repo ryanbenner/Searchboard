@@ -44,7 +44,7 @@ export function Runs(): React.JSX.Element {
         <div>
           <div className="kicker">Activity</div>
           <h3>Runs &amp; output</h3>
-          <p className="text-muted" style={{ fontSize: 13, marginTop: 5.6 }}>
+          <p className="text-muted" style={{ fontSize: 14, marginTop: 5.6 }}>
             Manual runs from this machine; the 7:00 daily workflow runs on GitHub.
           </p>
         </div>
