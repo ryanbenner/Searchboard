@@ -26,7 +26,7 @@ from searchboard.store import Store
 SCORE_FLOOR = 50
 TOP_N = 100
 DIGEST_LIMIT = 15
-DIGEST_MAX_AGE_DAYS = 3
+DIGEST_MAX_AGE_DAYS = 5
 XLSX_MAX_AGE_DAYS = 14
 
 
