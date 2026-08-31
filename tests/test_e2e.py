@@ -37,6 +37,13 @@ def test_full_pipeline(tmp_path, monkeypatch):
 
     monkeypatch.setattr(cli, "verify_links", lambda jobs, **kw: jobs)
 
+    # fixtures carry May 2026 posted dates; pin "today" so they stay fresh
+    class _Frozen(date):
+        @classmethod
+        def today(cls):
+            return date(2026, 5, 8)
+    monkeypatch.setattr(cli, "date", _Frozen)
+
     def fake_rank(jobs, profile, client=None):
         for j in jobs:
             j.score = 75

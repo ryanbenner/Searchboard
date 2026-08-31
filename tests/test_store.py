@@ -172,3 +172,22 @@ def test_scores_returns_only_ranked_rows(tmp_path):
     got = s.scores()
     assert got["g:a:1"] == (80, "ok")
     assert "g:a:2" not in got
+
+
+def test_unsent_top_excludes_postings_older_than_max_age(tmp_path):
+    s = Store(tmp_path / "seen.sqlite")
+    today = date.today()
+    stale = _j("g:a:1", score=90)
+    stale.posted_at = today - timedelta(days=30)
+    fresh = _j("g:a:2", score=80)
+    fresh.posted_at = today - timedelta(days=10)
+    s.upsert([stale, fresh], today=today)
+    assert [j.id for j in s.unsent_top(today, max_age_days=21)] == ["g:a:2"]
+
+
+def test_unsent_top_age_falls_back_to_first_seen(tmp_path):
+    s = Store(tmp_path / "seen.sqlite")
+    today = date.today()
+    s.upsert([_j("g:a:1", score=90)], today=today - timedelta(days=40))
+    s.upsert([_j("g:a:1", score=90)], today=today)   # still live, no posted_at
+    assert s.unsent_top(today, max_age_days=21) == []

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 import sqlite3
 from searchboard.job import Job
@@ -115,15 +115,19 @@ class Store:
             )
 
     def unsent_top(self, today: date, score_floor: int = 50,
-                   limit: int = 15) -> list[Job]:
+                   limit: int = 15, max_age_days: int | None = None) -> list[Job]:
+        # posting age uses the board's posted_at, else when we first saw it
+        cutoff = ((today - timedelta(days=max_age_days)).isoformat()
+                  if max_age_days is not None else "0000-01-01")
         rows = self._conn.execute("""
             SELECT * FROM seen
             WHERE sent_at IS NULL
               AND ranked_score >= ?
               AND last_seen = ?
+              AND COALESCE(posted_at, first_seen) >= ?
             ORDER BY ranked_score DESC
             LIMIT ?
-        """, (score_floor, today.isoformat(), limit)).fetchall()
+        """, (score_floor, today.isoformat(), cutoff, limit)).fetchall()
         return [self._row_to_job(r) for r in rows]
 
     def mark_sent(self, ids: list[str], today: date) -> None:
